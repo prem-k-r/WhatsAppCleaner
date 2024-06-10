@@ -62,6 +62,9 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.preferences)
+
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.runtime.livedata)
     

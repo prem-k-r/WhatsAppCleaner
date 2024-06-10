@@ -1,6 +1,7 @@
 package com.vishnu.whatsappcleaner
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,23 +12,44 @@ import java.io.File
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
 
-    val contentResolver = application.contentResolver
+    private val contentResolver = application.contentResolver
+
+    private val storeData = StoreData(application.applicationContext)
 
     fun listDirectories(path: String): MutableLiveData<ArrayList<String>> {
+        Log.i("vishnu", "listDirectories: $path")
 
         val list = ArrayList<String>()
 
-        val directoryList = MutableLiveData<ArrayList<String>>()
+        val mutableLiveData = MutableLiveData<ArrayList<String>>()
 
         viewModelScope.launch {
-            File(path).list { dir, name -> list.add(name) }
+            File(path).list { dir, name -> list.add("$dir/$name") }
 
-            directoryList.postValue(list)
+            Log.i("vishnu", "listDirectories: $list")
+            mutableLiveData.postValue(list)
         }
 
-        return directoryList;
+        return mutableLiveData;
     }
 
+    fun saveHomeUri(path: String) {
+        Log.i("vishnu", "saveHomeUri: $path")
+        viewModelScope.launch {
+            storeData.set(
+                Constants.WHATSAPP_HOME_URI,
+                "/storage/emulated/0/" + path
+            )
+        }
+    }
+
+    fun getHomeUri(): MutableLiveData<String> {
+        val mutableLiveData = MutableLiveData<String>()
+        viewModelScope.launch {
+            mutableLiveData.postValue(storeData.get(Constants.WHATSAPP_HOME_URI))
+        }
+        return mutableLiveData;
+    }
 }
 
 class MainViewModelFactory(private val application: Application) : ViewModelProvider.Factory {

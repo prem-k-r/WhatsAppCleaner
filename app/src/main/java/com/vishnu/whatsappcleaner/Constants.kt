@@ -1,10 +1,8 @@
 package com.vishnu.whatsappcleaner
 
-class Constants {
-    companion object {
-        const val WHATSAPP_HOME_URI = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp"
+object Constants {
+    const val WHATSAPP_HOME_URI = "whatsapp_home_uri"
 
-        const val SCREEN_PERMISSION = "permission"
-        const val SCREEN_HOME = "home"
-    }
+    const val SCREEN_PERMISSION = "permission"
+    const val SCREEN_HOME = "home"
 }

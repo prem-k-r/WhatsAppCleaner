@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.vishnu.whatsappcleaner.ui.theme.WhatsAppCleanerTheme
 
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: MainViewModel;
@@ -29,11 +30,18 @@ class MainActivity : ComponentActivity() {
 
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK && Build.VERSION.SDK_INT >= VERSION_CODES.Q && result.data != null) {
+                if (result.resultCode == RESULT_OK
+                    && Build.VERSION.SDK_INT >= VERSION_CODES.Q
+                    && result.data != null
+                    && result.data!!.data != null
+                    && result.data!!.data!!.path != null
+                ) {
                     contentResolver.takePersistableUriPermission(
                         result.data!!.data!!,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
+
+                    viewModel.saveHomeUri(result.data!!.data!!.path!!.split(":")[1])
 
                     // terrible hack!
                     val intent = intent;
@@ -42,9 +50,7 @@ class MainActivity : ComponentActivity() {
 
                 } else {
                     Toast.makeText(
-                        this,
-                        "Permission not granted, exiting...",
-                        Toast.LENGTH_SHORT
+                        this, "Permission not granted, exiting...", Toast.LENGTH_SHORT
                     ).show()
                     finish()
                 }
@@ -64,8 +70,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 NavHost(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     navController = navController,
                     startDestination = startDestination
                 ) {
@@ -81,7 +86,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = Constants.SCREEN_HOME) {
-                        HomeScreen(navController)
+                        HomeScreen(
+                            navController, viewModel
+                        )
                     }
                 }
             }
