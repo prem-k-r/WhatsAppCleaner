@@ -1,82 +1,62 @@
 package com.vishnu.whatsappcleaner
 
-data class ListDirectory(val name: String, val path: String, val icon: Int) {
+data class ListDirectory(val name: String, val path: String, val icon: Int, val size: Long = 0L) {
     companion object {
         fun getDirectoryList(homePath: String): List<ListDirectory> {
             return listOf(
                 ListDirectory(
                     "Images",
-                    "$homePath/WhatsApp Images",
+                    "$homePath/Media/WhatsApp Images",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Video",
-                    "$homePath/WhatsApp Video",
-                    R.drawable.ic_launcher_foreground
-                ),
-                ListDirectory(
-                    "Documents",
-                    "$homePath/WhatsApp Documents",
-                    R.drawable.ic_launcher_foreground
-                ),
-                ListDirectory(
-                    "Images",
-                    "$homePath/WhatsApp Images",
-                    R.drawable.ic_launcher_foreground
-                ),
-                ListDirectory(
-                    "Video",
-                    "$homePath/WhatsApp Video",
+                    "Videos",
+                    "$homePath/Media/WhatsApp Video",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
                     "Documents",
-                    "$homePath/WhatsApp Documents",
+                    "$homePath/Media/WhatsApp Documents",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Images",
-                    "$homePath/WhatsApp Images",
+                    "Statuses",
+                    "$homePath/Media/.Statuses",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Video",
-                    "$homePath/WhatsApp Video",
+                    "Audios",
+                    "$homePath/Media/WhatsApp Audio",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Documents",
-                    "$homePath/WhatsApp Documents",
+                    "Wallpapers",
+                    "$homePath/Media/WhatsApp WallPaper",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Images",
-                    "$homePath/WhatsApp Images",
+                    "GIFs",
+                    "$homePath/Media/WhatsApp Animated Gifs",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Video",
-                    "$homePath/WhatsApp Video",
+                    "Stickers",
+                    "$homePath/Media/WhatsApp Stickers",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Documents",
-                    "$homePath/WhatsApp Documents",
+                    "Profile Photos",
+                    "$homePath/Media/WhatsApp Profile Photos",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Images",
-                    "$homePath/WhatsApp Images",
+                    "Voice Notes",
+                    "$homePath/Media/WhatsApp Voice Notes",
                     R.drawable.ic_launcher_foreground
                 ),
                 ListDirectory(
-                    "Video",
-                    "$homePath/WhatsApp Video",
-                    R.drawable.ic_launcher_foreground
-                ),
-                ListDirectory(
-                    "Documents",
-                    "$homePath/WhatsApp Documents",
+                    "Voice Notes",
+                    "$homePath/Media/WhatsApp Video Notes",
                     R.drawable.ic_launcher_foreground
                 ),
             )

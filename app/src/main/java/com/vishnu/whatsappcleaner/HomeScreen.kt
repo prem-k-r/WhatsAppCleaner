@@ -66,10 +66,12 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                     }
                 })
 
-            DirectoryList(
-                Modifier.weight(1f),
-                ListDirectory.getDirectoryList(homeUri.value.toString())
-            )
+            if (homeUri.value != null)
+                DirectoryList(
+                    Modifier.weight(1f),
+                    ListDirectory.getDirectoryList(homeUri.value.toString()),
+                    viewModel
+                )
 
             CustomButton(
                 Modifier
@@ -128,7 +130,11 @@ fun Banner(modifier: Modifier, text: AnnotatedString) {
 }
 
 @Composable
-fun DirectoryList(modifier: Modifier, list: List<ListDirectory> = emptyList()) {
+fun DirectoryList(
+    modifier: Modifier,
+    list: List<ListDirectory> = emptyList(),
+    viewModel: MainViewModel
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -147,15 +153,18 @@ fun DirectoryList(modifier: Modifier, list: List<ListDirectory> = emptyList()) {
         )
 
         LazyColumn(Modifier.weight(1f)) {
-            items(list) {
-                SingleCard(it)
+            items(list, key = { it.name }) {
+                SingleCard(it, viewModel)
             }
         }
     }
 }
 
 @Composable
-fun SingleCard(listDirectory: ListDirectory) {
+fun SingleCard(listDirectory: ListDirectory, viewModel: MainViewModel) {
+
+    val directorySize = viewModel.getDirectorySize(listDirectory.path).observeAsState()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -195,7 +204,7 @@ fun SingleCard(listDirectory: ListDirectory) {
                         .fillMaxWidth()
                         .align(Alignment.Start)
                         .padding(4.dp),
-                    text = "200 MB",
+                    text = directorySize.value.toString(),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )

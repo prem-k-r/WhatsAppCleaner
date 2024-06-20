@@ -1,6 +1,7 @@
 package com.vishnu.whatsappcleaner
 
 import android.app.Application
+import android.text.format.Formatter
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -47,6 +48,24 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         val mutableLiveData = MutableLiveData<String>()
         viewModelScope.launch {
             mutableLiveData.postValue(storeData.get(Constants.WHATSAPP_HOME_URI))
+        }
+        return mutableLiveData;
+    }
+
+    fun getDirectorySize(path: String): MutableLiveData<String> {
+        val mutableLiveData = MutableLiveData<String>("0 B")
+
+        viewModelScope.launch {
+            mutableLiveData.postValue(
+                Formatter
+                    .formatFileSize(
+                        application,
+                        File(path)
+                            .walkTopDown()
+                            .map { it.length() }
+                            .sum()
+                    )
+            )
         }
         return mutableLiveData;
     }
