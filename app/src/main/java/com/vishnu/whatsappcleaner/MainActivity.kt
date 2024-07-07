@@ -90,6 +90,12 @@ class MainActivity : ComponentActivity() {
                             navController, viewModel
                         )
                     }
+
+                    composable(route = Constants.SCREEN_DETAILS) {
+                        DetailsScreen(
+                            navController, viewModel
+                        )
+                    }
                 }
             }
         }

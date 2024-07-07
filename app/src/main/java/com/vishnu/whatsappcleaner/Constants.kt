@@ -5,4 +5,7 @@ object Constants {
 
     const val SCREEN_PERMISSION = "permission"
     const val SCREEN_HOME = "home"
+    const val SCREEN_DETAILS = "details"
+
+    const val DETAILS_LIST_ITEM = "details_list_item"
 }

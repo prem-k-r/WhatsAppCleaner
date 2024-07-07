@@ -1,7 +1,12 @@
 package com.vishnu.whatsappcleaner
 
-data class ListDirectory(val name: String, val path: String, val icon: Int, val size: Long = 0L) {
+import java.io.Serializable
+
+data class ListDirectory(val name: String, val path: String, val icon: Int, val size: Long = 0L) :
+    Serializable {
     companion object {
+        private const val serialVersionUID: Long = -5435756175248173106L
+
         fun getDirectoryList(homePath: String): List<ListDirectory> {
             return listOf(
                 ListDirectory(

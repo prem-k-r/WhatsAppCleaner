@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -70,7 +71,8 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                 DirectoryList(
                     Modifier.weight(1f),
                     ListDirectory.getDirectoryList(homeUri.value.toString()),
-                    viewModel
+                    viewModel,
+                    navController
                 )
 
             CustomButton(
@@ -129,11 +131,13 @@ fun Banner(modifier: Modifier, text: AnnotatedString) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DirectoryList(
     modifier: Modifier,
     list: List<ListDirectory> = emptyList(),
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    navController: NavHostController
 ) {
     Card(
         modifier = modifier
@@ -154,14 +158,19 @@ fun DirectoryList(
 
         LazyColumn(Modifier.weight(1f)) {
             items(list, key = { it.name }) {
-                SingleCard(it, viewModel)
+                SingleCard(it, viewModel, navController)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SingleCard(listDirectory: ListDirectory, viewModel: MainViewModel) {
+fun SingleCard(
+    listDirectory: ListDirectory,
+    viewModel: MainViewModel,
+    navController: NavHostController
+) {
 
     val directorySize = viewModel.getDirectorySize(listDirectory.path).observeAsState()
 
@@ -170,6 +179,14 @@ fun SingleCard(listDirectory: ListDirectory, viewModel: MainViewModel) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        onClick = {
+
+            navController.currentBackStackEntry?.savedStateHandle?.apply {
+                set(Constants.DETAILS_LIST_ITEM, null)
+            }
+
+            navController.navigate(Constants.SCREEN_DETAILS)
+        }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
