@@ -1,11 +1,12 @@
 package com.vishnu.whatsappcleaner
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -44,7 +48,7 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
     var directoryList = viewModel.getDirectoryList().observeAsState()
 
     Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             Modifier.padding(top = 64.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
@@ -54,7 +58,8 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
             Title(
                 Modifier
                     .padding(0.dp)
-                    .align(Alignment.Start), stringResource(R.string.app_name)
+                    .align(Alignment.Start),
+                stringResource(R.string.app_name)
             )
 
             Banner(Modifier.padding(16.dp),
@@ -67,22 +72,20 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                     }
                 })
 
-            DirectoryList(
-                    Modifier.weight(1f),
-                directoryList.value!!,
-                    viewModel,
-                    navController
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                text = "Select to Explore",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
-            CustomButton(
-                Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(), "Cleanup"
-            ) {
-
+            LazyColumn(Modifier.weight(1f)) {
+                items(directoryList.value!!, key = { it.name }) {
+                    SingleCard(it, navController)
+                }
             }
-
-
         }
     }
 }
@@ -90,22 +93,19 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
 @Composable
 fun Banner(modifier: Modifier, text: AnnotatedString) {
     Card(
-        modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
+        modifier
+            .fillMaxWidth()
+            .aspectRatio(2f),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
-        Row {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier
                     .size(128.dp)
                     .aspectRatio(1f)
-                    .background(MaterialTheme.colorScheme.tertiary, shape = CircleShape)
-                    .padding(4.dp) // width
-                    .background(MaterialTheme.colorScheme.background, shape = CircleShape)
-                    .padding(4.dp) // space
-                    .background(MaterialTheme.colorScheme.tertiary, shape = CircleShape)
-                    .padding(2.dp) // width
-                    .background(MaterialTheme.colorScheme.background, shape = CircleShape),
+                    .background(MaterialTheme.colorScheme.inversePrimary, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -117,48 +117,26 @@ fun Banner(modifier: Modifier, text: AnnotatedString) {
                 )
             }
 
-            Text(
-                modifier = Modifier
+            TextButton(
+                modifier = modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterVertically)
-                    .padding(4.dp),
-                text = "Space Used",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        }
-    }
-}
-
-@Composable
-fun DirectoryList(
-    modifier: Modifier,
-    list: List<ListDirectory>,
-    viewModel: MainViewModel,
-    navController: NavHostController
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
-    ) {
-
-        Text(
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(16.dp, 16.dp, 16.dp, 8.dp),
-            text = "Select to Explore",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        LazyColumn(Modifier.weight(1f)) {
-            items(list, key = { it.name }) {
-                SingleCard(it, viewModel, navController)
+                    .padding(8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.inversePrimary),
+                shape = RoundedCornerShape(64.dp),
+                contentPadding = PaddingValues(12.dp),
+                onClick = { }
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                            append("Cleanup")
+                        }
+                    }, fontSize = 24.sp, fontWeight = FontWeight.Medium
+                )
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
@@ -166,14 +144,13 @@ fun DirectoryList(
 @Composable
 fun SingleCard(
     listDirectory: ListDirectory,
-    viewModel: MainViewModel,
     navController: NavHostController
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         onClick = {
             navController.currentBackStackEntry?.savedStateHandle?.apply {
                 set(Constants.DETAILS_LIST_ITEM, null)
@@ -187,7 +164,6 @@ fun SingleCard(
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth(0.20f)
-                    .background(MaterialTheme.colorScheme.tertiary, shape = CircleShape)
                     .aspectRatio(1f),
                 imageVector = ImageVector.vectorResource(id = listDirectory.icon),
                 contentDescription = "icon"

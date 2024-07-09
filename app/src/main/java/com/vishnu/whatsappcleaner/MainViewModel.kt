@@ -66,6 +66,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     fun getDirectoryList(): MutableLiveData<List<ListDirectory>> {
         val mutableLiveData = MutableLiveData<List<ListDirectory>>(listOf())
 
+//        mutableLiveData.postValue(ListDirectory.getDirectoryList(""))
         viewModelScope.launch {
             storeData.get(Constants.WHATSAPP_HOME_URI)?.let { homeUri ->
                 mutableLiveData.postValue(
