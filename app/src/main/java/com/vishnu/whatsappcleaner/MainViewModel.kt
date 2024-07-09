@@ -57,17 +57,38 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
         viewModelScope.launch {
             mutableLiveData.postValue(
-                Formatter
-                    .formatFileSize(
-                        application,
-                        File(path)
-                            .walkTopDown()
-                            .map { it.length() }
-                            .sum()
-                    )
+                getSize(path)
             )
         }
         return mutableLiveData;
+    }
+
+    fun getDirectoryList(): MutableLiveData<List<ListDirectory>> {
+        val mutableLiveData = MutableLiveData<List<ListDirectory>>(listOf())
+
+        viewModelScope.launch {
+            storeData.get(Constants.WHATSAPP_HOME_URI)?.let { homeUri ->
+                mutableLiveData.postValue(
+                    ListDirectory.getDirectoryList(homeUri).map { directoryItem ->
+                        directoryItem.size = getSize(directoryItem.path)
+                        directoryItem
+                    }
+                )
+            }
+        }
+
+        return mutableLiveData;
+    }
+
+    private fun getSize(path: String): String {
+        return Formatter
+            .formatFileSize(
+                application,
+                File(path)
+                    .walkTopDown()
+                    .map { it.length() }
+                    .sum()
+            )
     }
 }
 

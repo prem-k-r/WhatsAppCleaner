@@ -1,6 +1,5 @@
 package com.vishnu.whatsappcleaner
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,7 +25,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
         Constants.DETAILS_LIST_ITEM
     )
 
-    if (listDirectory == null) {
+    if (listDirectory == null) { // FIXME!
         Toast.makeText(
             navController.context,
             "Some went wrong!",
@@ -37,10 +35,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
         navController.popBackStack(Constants.SCREEN_HOME, false)
         return
     }
-
-    val size = viewModel.getDirectorySize(listDirectory.path).observeAsState()
-
-    Log.e("vishnu", "DetailsScreen: " + listDirectory.size.toString())
 
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -59,7 +53,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             Banner(Modifier.padding(16.dp),
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(fontSize = 24.sp)) {
-                        append(size.value)
+                        append(listDirectory?.size)
                     }
                     withStyle(SpanStyle(fontSize = 12.sp)) {
                         append(" MB")

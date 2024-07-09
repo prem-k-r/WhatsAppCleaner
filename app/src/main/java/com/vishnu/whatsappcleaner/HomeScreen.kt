@@ -41,7 +41,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
 
-    val homeUri = viewModel.getHomeUri().observeAsState()
+    var directoryList = viewModel.getDirectoryList().observeAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -67,13 +67,12 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                     }
                 })
 
-            if (homeUri.value != null)
-                DirectoryList(
+            DirectoryList(
                     Modifier.weight(1f),
-                    ListDirectory.getDirectoryList(homeUri.value.toString()),
+                directoryList.value!!,
                     viewModel,
                     navController
-                )
+            )
 
             CustomButton(
                 Modifier
@@ -131,11 +130,10 @@ fun Banner(modifier: Modifier, text: AnnotatedString) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DirectoryList(
     modifier: Modifier,
-    list: List<ListDirectory> = emptyList(),
+    list: List<ListDirectory>,
     viewModel: MainViewModel,
     navController: NavHostController
 ) {
@@ -171,20 +169,15 @@ fun SingleCard(
     viewModel: MainViewModel,
     navController: NavHostController
 ) {
-
-    val directorySize = viewModel.getDirectorySize(listDirectory.path).observeAsState()
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         onClick = {
-
             navController.currentBackStackEntry?.savedStateHandle?.apply {
                 set(Constants.DETAILS_LIST_ITEM, null)
             }
-
             navController.navigate(Constants.SCREEN_DETAILS)
         }
     ) {
@@ -221,7 +214,7 @@ fun SingleCard(
                         .fillMaxWidth()
                         .align(Alignment.Start)
                         .padding(4.dp),
-                    text = directorySize.value.toString(),
+                    text = listDirectory.size,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
