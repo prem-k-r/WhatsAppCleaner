@@ -19,33 +19,38 @@ import androidx.navigation.NavHostController
 @Composable
 fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
-    val listDirectory = navController.previousBackStackEntry?.savedStateHandle?.get<ListDirectory>(
-        Constants.DETAILS_LIST_ITEM
-    )
+    MaterialTheme {
 
-    Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-    ) {
-        Column(
-            Modifier.padding(top = 64.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Title(
-                Modifier
-                    .padding(0.dp)
-                    .align(Alignment.Start), stringResource(R.string.app_name)
+        val listDirectory =
+            navController.previousBackStackEntry?.savedStateHandle?.get<ListDirectory>(
+                Constants.DETAILS_LIST_ITEM
             )
 
-            if (listDirectory == null) {
-                LinearProgressIndicator(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(2.dp)))
-                return@Surface
-            }
+        Surface(
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                Modifier.padding(top = 64.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            Banner(Modifier.padding(16.dp), listDirectory.size)
+                Title(
+                    Modifier
+                        .padding(0.dp)
+                        .align(Alignment.Start), stringResource(R.string.app_name)
+                )
+
+                if (listDirectory == null) {
+                    LinearProgressIndicator(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(2.dp))
+                    )
+                    return@Surface
+                }
+
+                Banner(Modifier.padding(16.dp), listDirectory.size)
+            }
         }
     }
 }

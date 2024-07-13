@@ -30,37 +30,40 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
 
-    var directoryListPair = viewModel.getDirectoryList().observeAsState()
+    MaterialTheme {
 
-    Surface(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
-            Modifier.padding(top = 64.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        var directoryListPair = viewModel.getDirectoryList().observeAsState()
+
+        Surface(
+            modifier = Modifier.fillMaxSize()
         ) {
+            Column(
+                Modifier.padding(top = 64.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            Title(
-                Modifier
-                    .padding(0.dp)
-                    .align(Alignment.Start),
-                stringResource(R.string.app_name)
-            )
+                Title(
+                    Modifier
+                        .padding(0.dp)
+                        .align(Alignment.Start),
+                    stringResource(R.string.app_name)
+                )
 
-            Banner(Modifier.padding(16.dp), directoryListPair.value!!.first)
+                Banner(Modifier.padding(16.dp), directoryListPair.value!!.first)
 
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(16.dp, 16.dp, 16.dp, 8.dp),
-                text = "Select to Explore",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    text = "Select to Explore",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-            LazyColumn(Modifier.weight(1f)) {
-                items(directoryListPair.value!!.second, key = { it.name }) {
-                    SingleCard(it, navController)
+                LazyColumn(Modifier.weight(1f)) {
+                    items(directoryListPair.value!!.second) {
+                        SingleCard(it, navController)
+                    }
                 }
             }
         }

@@ -3,8 +3,10 @@ package com.vishnu.whatsappcleaner
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,13 +19,15 @@ import androidx.navigation.NavHostController
 fun PermissionScreen(navController: NavHostController, requestPermission: () -> Unit) {
 
     Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        modifier = Modifier
+            .fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
 
         Column(Modifier.padding(vertical = 32.dp)) {
 
             Text(
-                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp),
+                modifier = Modifier.padding(16.dp, 32.dp, 16.dp, 0.dp),
                 text = "Welcome!",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Start,
@@ -40,9 +44,15 @@ fun PermissionScreen(navController: NavHostController, requestPermission: () -> 
 
             Spacer(Modifier.weight(1f))
 
-//            CustomButton(Modifier.fillMaxWidth(), "Grant permissions") {
-//                requestPermission()
-//            }
+            OutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                content = { Text("Grant permissions") },
+                onClick = {
+                    requestPermission()
+                }
+            )
         }
     }
 }
