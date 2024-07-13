@@ -86,16 +86,14 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = Constants.SCREEN_HOME) {
-                        HomeScreen(
-                            navController, viewModel
-                        )
+                        HomeScreen(navController, viewModel)
                     }
 
                     composable(route = Constants.SCREEN_DETAILS) {
-                        DetailsScreen(
-                            navController, viewModel
-                        )
+                        DetailsScreen(navController, viewModel)
                     }
+
+
                 }
             }
         }

@@ -1,7 +1,7 @@
 package com.vishnu.whatsappcleaner
 
 import android.app.Application
-import android.text.format.Formatter
+import android.text.format.Formatter.formatFileSize
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -52,20 +52,15 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData;
     }
 
-    fun getDirectorySize(path: String): MutableLiveData<String> {
-        val mutableLiveData = MutableLiveData<String>("0 B")
+    fun getDirectoryList(): MutableLiveData<Pair<String, List<ListDirectory>>> {
 
-        viewModelScope.launch {
-            mutableLiveData.postValue(
-                getSize(path)
+        var totalSize = 0L
+
+        val mutableLiveData = MutableLiveData<Pair<String, List<ListDirectory>>>(
+            Pair(
+                formatFileSize(application, totalSize),
+                ListDirectory.getDirectoryList("com.vishnu.whatsappcleaner.loading")
             )
-        }
-        return mutableLiveData;
-    }
-
-    fun getDirectoryList(): MutableLiveData<List<ListDirectory>> {
-        val mutableLiveData = MutableLiveData<List<ListDirectory>>(
-            ListDirectory.getDirectoryList("com.vishnu.whatsappcleaner.loading")
         )
 
         viewModelScope.launch {
@@ -74,9 +69,19 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                 val directoryList = ListDirectory.getDirectoryList(homeUri)
 
                 directoryList.listIterator().forEach() { directoryItem ->
-                    directoryItem.size = getSize(directoryItem.path)
 
-                    mutableLiveData.postValue(directoryList)
+                    val size = getSize(directoryItem.path)
+
+                    directoryItem.size = formatFileSize(application, size)
+
+                    totalSize += size
+
+                    mutableLiveData.postValue(
+                        Pair(
+                            formatFileSize(application, totalSize),
+                            directoryList
+                        )
+                    )
                 }
             }
         }
@@ -84,15 +89,11 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData;
     }
 
-    private fun getSize(path: String): String {
-        return Formatter
-            .formatFileSize(
-                application,
-                File(path)
-                    .walkTopDown()
-                    .map { it.length() }
-                    .sum()
-            )
+    private fun getSize(path: String): Long {
+        return File(path)
+            .walkTopDown()
+            .map { it.length() }
+            .sum()
     }
 }
 
