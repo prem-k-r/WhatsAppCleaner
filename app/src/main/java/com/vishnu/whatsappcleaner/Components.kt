@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.valentinilk.shimmer.shimmer
 
 
 @Composable
@@ -52,8 +53,16 @@ fun Banner(modifier: Modifier, text: String) {
         Spacer(modifier = Modifier.weight(1f))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
+
+            val mod =
+                if (text.equals("0 B"))
+                    Modifier.shimmer()
+                else
+                    Modifier
+
             Box(
-                modifier
+                mod
+                    .padding(8.dp)
                     .size(128.dp)
                     .aspectRatio(1f)
                     .background(MaterialTheme.colorScheme.secondary, shape = CircleShape),
@@ -79,7 +88,8 @@ fun Banner(modifier: Modifier, text: String) {
             }
 
             TextButton(
-                modifier = modifier
+                modifier = Modifier
+                    .padding(8.dp)
                     .fillMaxWidth()
                     .padding(8.dp),
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.secondary),

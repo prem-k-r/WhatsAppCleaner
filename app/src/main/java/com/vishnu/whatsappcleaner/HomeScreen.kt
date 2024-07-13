@@ -11,13 +11,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -30,55 +32,68 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
 
-    MaterialTheme {
+    var totalSize = remember { mutableStateOf("0 B") }
 
-        var directoryListPair = viewModel.getDirectoryList().observeAsState()
+    var directoryList = remember { mutableStateListOf<ListDirectory>() }
 
-        Surface(
-            modifier = Modifier.fillMaxSize()
+    LaunchedEffect(key1 = null) {
+        viewModel.getDirectoryList().observeForever {
+            totalSize.value = it.first
+
+            directoryList.clear()
+            directoryList.addAll(it.second)
+        }
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            Modifier.padding(top = 64.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                Modifier.padding(top = 64.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
 
-                Title(
-                    Modifier
-                        .padding(0.dp)
-                        .align(Alignment.Start),
-                    stringResource(R.string.app_name)
-                )
+            Title(
+                Modifier
+                    .padding(0.dp)
+                    .align(Alignment.Start),
+                stringResource(R.string.app_name)
+            )
 
-                Banner(Modifier.padding(16.dp), directoryListPair.value!!.first)
+            Banner(Modifier.padding(16.dp), totalSize.value)
 
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    text = "Select to Explore",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                text = "Select to Explore",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-                LazyColumn(Modifier.weight(1f)) {
-                    items(directoryListPair.value!!.second) {
-                        SingleCard(it, navController)
-                    }
+            LazyColumn(Modifier.weight(1f)) {
+                items(directoryList) {
+                    SingleCard(it, navController)
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleCard(
     listDirectory: ListDirectory,
     navController: NavHostController
 ) {
 
+    val modifier =
+        if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading"))
+            Modifier.shimmer()
+        else
+            Modifier
+
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
@@ -116,14 +131,8 @@ fun SingleCard(
                     color = MaterialTheme.colorScheme.onBackground,
                 )
 
-                val modifier =
-                    if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading"))
-                        Modifier.shimmer()
-                    else
-                        Modifier
-
                 Text(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Start)
                         .padding(4.dp),

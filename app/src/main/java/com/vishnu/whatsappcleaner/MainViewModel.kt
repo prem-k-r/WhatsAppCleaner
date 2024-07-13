@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -63,26 +64,26 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             )
         )
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             storeData.get(Constants.WHATSAPP_HOME_URI)?.let { homeUri ->
 
                 val directoryList = ListDirectory.getDirectoryList(homeUri)
 
-                directoryList.listIterator().forEach() { directoryItem ->
+                directoryList.forEach { directoryItem ->
 
                     val size = getSize(directoryItem.path)
 
                     directoryItem.size = formatFileSize(application, size)
 
                     totalSize += size
-
-                    mutableLiveData.postValue(
-                        Pair(
-                            formatFileSize(application, totalSize),
-                            directoryList
-                        )
-                    )
                 }
+
+                mutableLiveData.postValue(
+                    Pair(
+                        formatFileSize(application, totalSize),
+                        directoryList
+                    )
+                )
             }
         }
 
