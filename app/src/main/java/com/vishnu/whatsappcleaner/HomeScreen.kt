@@ -41,6 +41,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
@@ -96,7 +97,7 @@ fun Banner(modifier: Modifier, text: AnnotatedString) {
         modifier
             .fillMaxWidth()
             .aspectRatio(2f),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
@@ -105,13 +106,13 @@ fun Banner(modifier: Modifier, text: AnnotatedString) {
                 modifier
                     .size(128.dp)
                     .aspectRatio(1f)
-                    .background(MaterialTheme.colorScheme.inversePrimary, shape = CircleShape),
+                    .background(MaterialTheme.colorScheme.secondary, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = text,
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                 )
@@ -121,14 +122,14 @@ fun Banner(modifier: Modifier, text: AnnotatedString) {
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.inversePrimary),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.secondary),
                 shape = RoundedCornerShape(64.dp),
                 contentPadding = PaddingValues(12.dp),
                 onClick = { }
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSecondary)) {
                             append("Cleanup")
                         }
                     }, fontSize = 24.sp, fontWeight = FontWeight.Medium
@@ -146,8 +147,14 @@ fun SingleCard(
     listDirectory: ListDirectory,
     navController: NavHostController
 ) {
+
+    val modifier = if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading"))
+        Modifier.shimmer()
+    else
+        Modifier
+
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),

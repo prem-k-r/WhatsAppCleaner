@@ -64,17 +64,20 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     fun getDirectoryList(): MutableLiveData<List<ListDirectory>> {
-        val mutableLiveData = MutableLiveData<List<ListDirectory>>(listOf())
+        val mutableLiveData = MutableLiveData<List<ListDirectory>>(
+            ListDirectory.getDirectoryList("com.vishnu.whatsappcleaner.loading")
+        )
 
-//        mutableLiveData.postValue(ListDirectory.getDirectoryList(""))
         viewModelScope.launch {
             storeData.get(Constants.WHATSAPP_HOME_URI)?.let { homeUri ->
-                mutableLiveData.postValue(
-                    ListDirectory.getDirectoryList(homeUri).map { directoryItem ->
-                        directoryItem.size = getSize(directoryItem.path)
-                        directoryItem
-                    }
-                )
+
+                val directoryList = ListDirectory.getDirectoryList(homeUri)
+
+                directoryList.listIterator().forEach() { directoryItem ->
+                    directoryItem.size = getSize(directoryItem.path)
+
+                    mutableLiveData.postValue(directoryList)
+                }
             }
         }
 
