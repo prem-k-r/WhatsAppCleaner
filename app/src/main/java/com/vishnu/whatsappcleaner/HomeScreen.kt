@@ -74,13 +74,8 @@ fun SingleCard(
     navController: NavHostController
 ) {
 
-    val modifier = if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading"))
-        Modifier.shimmer()
-    else
-        Modifier
-
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
@@ -118,8 +113,14 @@ fun SingleCard(
                     color = MaterialTheme.colorScheme.onBackground,
                 )
 
+                val modifier =
+                    if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading"))
+                        Modifier.shimmer()
+                    else
+                        Modifier
+
                 Text(
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
                         .align(Alignment.Start)
                         .padding(4.dp),
