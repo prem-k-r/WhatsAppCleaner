@@ -17,52 +17,52 @@ data class ListDirectory(
                 ListDirectory(
                     "Images",
                     "$homePath/Media/WhatsApp Images",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.image
                 ),
                 ListDirectory(
                     "Videos",
                     "$homePath/Media/WhatsApp Video",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.video
                 ),
                 ListDirectory(
                     "Documents",
                     "$homePath/Media/WhatsApp Documents",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.document
                 ),
                 ListDirectory(
                     "Statuses",
                     "$homePath/Media/.Statuses",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.status
                 ),
                 ListDirectory(
                     "Audios",
                     "$homePath/Media/WhatsApp Audio",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.audio
                 ),
                 ListDirectory(
                     "Wallpapers",
                     "$homePath/Media/WhatsApp WallPaper",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.wallpaper
                 ),
                 ListDirectory(
                     "GIFs",
                     "$homePath/Media/WhatsApp Animated Gifs",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.gif
                 ),
                 ListDirectory(
                     "Stickers",
                     "$homePath/Media/WhatsApp Stickers",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.sticker
                 ),
                 ListDirectory(
                     "Profile Photos",
                     "$homePath/Media/WhatsApp Profile Photos",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.profile
                 ),
                 ListDirectory(
                     "Voice Notes",
                     "$homePath/Media/WhatsApp Voice Notes",
-                    R.drawable.ic_launcher_foreground
+                    R.drawable.voice
                 ),
             )
         }
