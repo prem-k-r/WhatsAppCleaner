@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.compose.shimmer)
+    implementation(libs.glide.compose)
 
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.runtime.livedata)

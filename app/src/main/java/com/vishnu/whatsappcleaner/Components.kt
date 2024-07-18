@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,6 +33,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import com.valentinilk.shimmer.shimmer
 
 
@@ -194,6 +198,7 @@ fun SingleCard(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemCard(
     path: String,
@@ -201,7 +206,6 @@ fun ItemCard(
 ) {
 
     val bgColor = MaterialTheme.colorScheme.secondaryContainer
-    val textColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     val modifier =
         if (path.toString().contains("com.vishnu.whatsappcleaner.loading"))
@@ -212,6 +216,7 @@ fun ItemCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .aspectRatio(1f)
             .padding(8.dp),
         colors = CardDefaults.cardColors(containerColor = bgColor),
         onClick = {
@@ -221,42 +226,17 @@ fun ItemCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 Modifier
-                    .padding(12.dp)
-//                    .fillMaxWidth(0.3f)
-//                    .aspectRatio(1f)
                     .background(bgColor, shape = RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = path.toString(), style = MaterialTheme.typography.labelSmall)
+                GlideImage(
+                    model = path,
+                    contentScale = ContentScale.Crop,
+                    loading = placeholder(R.drawable.image),
+                    failure = placeholder(R.drawable.error),
+                    contentDescription = "details list item"
+                )
             }
-
-//            Column(
-//                Modifier
-//                    .align(Alignment.CenterVertically)
-//                    .fillMaxWidth(0.75f),
-//                verticalArrangement = Arrangement.SpaceEvenly
-//            ) {
-//                Text(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .align(Alignment.Start)
-//                        .padding(4.dp),
-//                    text = listDirectory.name,
-//                    style = MaterialTheme.typography.titleLarge,
-//                    color = textColor,
-//                )
-//
-//                Text(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .align(Alignment.Start)
-//                        .padding(4.dp),
-//                    text = listDirectory.size,
-//                    fontWeight = FontWeight.Bold,
-//                    style = MaterialTheme.typography.titleSmall,
-//                    color = textColor,
-//                )
-//            }
         }
     }
 }
