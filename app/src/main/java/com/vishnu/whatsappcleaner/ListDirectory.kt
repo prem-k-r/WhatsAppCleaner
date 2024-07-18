@@ -41,7 +41,7 @@ data class ListDirectory(
                 ),
                 ListDirectory(
                     "Wallpapers",
-                    "$homePath/Media/WhatsApp WallPaper",
+                    "$homePath/Media/WallPaper",
                     R.drawable.wallpaper
                 ),
                 ListDirectory(

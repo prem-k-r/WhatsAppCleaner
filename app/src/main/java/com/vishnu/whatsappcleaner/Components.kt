@@ -193,3 +193,70 @@ fun SingleCard(
         }
     }
 }
+
+@Composable
+fun ItemCard(
+    path: String,
+    navController: NavHostController,
+) {
+
+    val bgColor = MaterialTheme.colorScheme.secondaryContainer
+    val textColor = MaterialTheme.colorScheme.onSecondaryContainer
+
+    val modifier =
+        if (path.toString().contains("com.vishnu.whatsappcleaner.loading"))
+            Modifier.shimmer()
+        else
+            Modifier
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = bgColor),
+        onClick = {
+            // preview
+        }
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .padding(12.dp)
+//                    .fillMaxWidth(0.3f)
+//                    .aspectRatio(1f)
+                    .background(bgColor, shape = RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = path.toString(), style = MaterialTheme.typography.labelSmall)
+            }
+
+//            Column(
+//                Modifier
+//                    .align(Alignment.CenterVertically)
+//                    .fillMaxWidth(0.75f),
+//                verticalArrangement = Arrangement.SpaceEvenly
+//            ) {
+//                Text(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .align(Alignment.Start)
+//                        .padding(4.dp),
+//                    text = listDirectory.name,
+//                    style = MaterialTheme.typography.titleLarge,
+//                    color = textColor,
+//                )
+//
+//                Text(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .align(Alignment.Start)
+//                        .padding(4.dp),
+//                    text = listDirectory.size,
+//                    fontWeight = FontWeight.Bold,
+//                    style = MaterialTheme.typography.titleSmall,
+//                    color = textColor,
+//                )
+//            }
+        }
+    }
+}

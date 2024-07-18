@@ -18,26 +18,9 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     private val storeData = StoreData(application.applicationContext)
 
-    fun listDirectories(path: String): MutableLiveData<ArrayList<String>> {
-        Log.i("vishnu", "listDirectories: $path")
-
-        val list = ArrayList<String>()
-
-        val mutableLiveData = MutableLiveData<ArrayList<String>>()
-
-        viewModelScope.launch {
-            File(path).list { dir, name -> list.add("$dir/$name") }
-
-            Log.i("vishnu", "listDirectories: $list")
-            mutableLiveData.postValue(list)
-        }
-
-        return mutableLiveData;
-    }
-
     fun saveHomeUri(path: String) {
         Log.i("vishnu", "saveHomeUri: $path")
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             storeData.set(
                 Constants.WHATSAPP_HOME_URI,
                 "/storage/emulated/0/" + path
@@ -47,13 +30,14 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     fun getHomeUri(): MutableLiveData<String> {
         val mutableLiveData = MutableLiveData<String>()
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             mutableLiveData.postValue(storeData.get(Constants.WHATSAPP_HOME_URI))
         }
         return mutableLiveData;
     }
 
     fun getDirectoryList(): MutableLiveData<Pair<String, List<ListDirectory>>> {
+        Log.i("vishnu", "getDirectoryList() called")
 
         var totalSize = 0L
 
@@ -78,6 +62,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                     totalSize += size
                 }
 
+                Log.e("vishnu", "getDirectoryList: $directoryList")
+
                 mutableLiveData.postValue(
                     Pair(
                         formatFileSize(application, totalSize),
@@ -90,7 +76,47 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData;
     }
 
+    fun getFileList(path: String): MutableLiveData<ArrayList<String>> {
+        Log.i("vishnu", "getFileList: $path")
+
+        val list = ArrayList<String>()
+
+        val mutableLiveData = MutableLiveData<ArrayList<String>>()
+
+        viewModelScope.launch(Dispatchers.Default) {
+            File(path).listFiles { dir, name -> list.add("$dir/$name") }
+
+            mutableLiveData.postValue(list)
+        }
+
+        return mutableLiveData;
+    }
+
+    fun getDirectoryList(path: String): MutableLiveData<ArrayList<String>> {
+        Log.i("vishnu", "getFileList: $path")
+
+        val list = ArrayList<String>()
+
+        val mutableLiveData = MutableLiveData<ArrayList<String>>()
+
+        viewModelScope.launch(Dispatchers.Default) {
+            File(path).list { dir, name ->
+                val f = File("$dir/$name")
+
+                if (f.isDirectory)
+                    list.add(f.path)
+
+                true
+            }
+
+            mutableLiveData.postValue(list)
+        }
+
+        return mutableLiveData;
+    }
+
     private fun getSize(path: String): Long {
+        Log.i("vishnu", "getSize() called with: path = $path")
         return File(path)
             .walkTopDown()
             .map { it.length() }

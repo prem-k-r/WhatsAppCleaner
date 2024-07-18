@@ -5,7 +5,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.os.Environment
 import android.provider.DocumentsContract
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,18 +32,16 @@ class MainActivity : ComponentActivity() {
 
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK
-                    && Build.VERSION.SDK_INT >= VERSION_CODES.Q
-                    && result.data != null
-                    && result.data!!.data != null
-                    && result.data!!.data!!.path != null
-                ) {
+                if (result.resultCode == RESULT_OK && Build.VERSION.SDK_INT >= VERSION_CODES.Q && result.data != null && result.data!!.data != null && result.data!!.data!!.path != null) {
+
+                    val homePath = result.data!!.data!!.path!!.split(":")[1]
+
                     contentResolver.takePersistableUriPermission(
                         result.data!!.data!!,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
 
-                    viewModel.saveHomeUri(result.data!!.data!!.path!!.split(":")[1])
+                    viewModel.saveHomeUri(homePath)
 
                     // terrible hack!
                     val intent = intent;
@@ -49,6 +49,16 @@ class MainActivity : ComponentActivity() {
                     startActivity(intent)
 
                 } else {
+                    Toast.makeText(
+                        this, "Permission not granted, exiting...", Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                }
+            }
+
+        val storagePermissionResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (!Environment.isExternalStorageManager()) {
                     Toast.makeText(
                         this, "Permission not granted, exiting...", Toast.LENGTH_SHORT
                     ).show()
@@ -75,14 +85,26 @@ class MainActivity : ComponentActivity() {
                     startDestination = startDestination
                 ) {
                     composable(route = Constants.SCREEN_PERMISSION) {
-                        PermissionScreen(navController) {
-                            resultLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                                if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
-                                    DocumentsContract.EXTRA_INITIAL_URI,
-                                    Uri.parse(Constants.WHATSAPP_HOME_URI)
+                        PermissionScreen(
+                            navController = navController,
+                            requestPermission = {
+                                storagePermissionResultLauncher.launch(
+                                    Intent(
+                                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                        Uri.parse("package:" + packageName)
+                                    )
+
                                 )
-                            })
-                        }
+                            },
+                            chooseDirectory = {
+                                resultLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                                    if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
+                                        DocumentsContract.EXTRA_INITIAL_URI,
+                                        Uri.parse(Constants.WHATSAPP_HOME_URI)
+                                    )
+                                })
+                            },
+                        )
                     }
 
                     composable(route = Constants.SCREEN_HOME) {

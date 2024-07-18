@@ -16,7 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 @Composable
-fun PermissionScreen(navController: NavHostController, requestPermission: () -> Unit) {
+fun PermissionScreen(
+    navController: NavHostController,
+    requestPermission: () -> Unit,
+    chooseDirectory: () -> Unit
+) {
 
     Surface(
         modifier = Modifier
@@ -48,9 +52,19 @@ fun PermissionScreen(navController: NavHostController, requestPermission: () -> 
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                content = { Text("Grant permissions") },
+                content = { Text("Grant all files permision") },
                 onClick = {
                     requestPermission()
+                }
+            )
+
+            OutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                content = { Text("Choose WhatsApp directory") },
+                onClick = {
+                    chooseDirectory()
                 }
             )
         }
