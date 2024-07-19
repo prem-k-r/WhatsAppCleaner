@@ -51,7 +51,7 @@ data class ListDirectory(
                 ),
                 ListDirectory(
                     "Video Notes",
-                    "$homePath/Media/WhatsApp VIdeo Notes",
+                    "$homePath/Media/WhatsApp Video Notes",
                     R.drawable.video_notes,
                     false
                 ),

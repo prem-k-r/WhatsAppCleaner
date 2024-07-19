@@ -82,15 +82,24 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         val mutableLiveData = MutableLiveData<ArrayList<String>>()
 
         viewModelScope.launch(Dispatchers.Default) {
-            File(path).listFiles { dir, name ->
 
-                val f = File("$dir/$name")
+            if (path.contains("Media/WhatsApp Voice Notes") or path.contains("Media/WhatsApp Video Notes"))
+                File(path)
+                    .walkTopDown()
+                    .forEach { f ->
+                        if (!f.isDirectory && f.name != ".nomedia")
+                            list.add(f.path)
+                    }
+            else
+                File(path).listFiles { dir, name ->
 
-                if (!f.isDirectory && f.name != ".nomedia")
-                    list.add(f.path)
+                    val f = File("$dir/$name")
 
-                true
-            }
+                    if (!f.isDirectory && f.name != ".nomedia")
+                        list.add(f.path)
+
+                    true
+                }
 
             mutableLiveData.postValue(list)
         }
