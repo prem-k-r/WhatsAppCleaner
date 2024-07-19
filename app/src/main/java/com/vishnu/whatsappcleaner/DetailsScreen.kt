@@ -112,18 +112,19 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     }
                 }
 
-                if (list.isNotEmpty())
+                if (list.isNotEmpty()) {
                     LazyVerticalGrid(
                         modifier = Modifier.fillMaxSize(),
                         columns = GridCells.Fixed(3),
                     ) {
-                        items(list, key = { it }) {
+                        items(list) {
                             ItemCard(it, navController, selectedItems.contains(it)) {
                                 if (!selectedItems.contains(it)) selectedItems.add(it)
                                 else selectedItems.remove(it)
                             }
                         }
-                    } else Icon(
+                    }
+                } else Icon(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(32.dp),

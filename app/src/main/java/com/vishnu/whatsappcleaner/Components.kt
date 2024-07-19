@@ -143,7 +143,7 @@ fun SingleCard(
     var onClick: () -> Unit
     var modifier: Modifier
 
-    if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading")) {
+    if (listDirectory.path.contains(Constants._LOADING)) {
         modifier = Modifier.shimmer()
         onClick = { }
     } else {
@@ -223,23 +223,23 @@ fun ItemCard(
     selected: Boolean,
     clickListener: () -> Unit
 ) {
-
-    val bgColor = MaterialTheme.colorScheme.secondaryContainer
-
     var clicked by remember { mutableStateOf(selected) }
 
     var onClick: () -> Unit
     var modifier: Modifier
+    var file: File
 
-    if (path.toString().contains("com.vishnu.whatsappcleaner.loading")) {
+    if (path.toString().contains(Constants._LOADING)) {
         modifier = Modifier.shimmer()
         onClick = { }
+        file = File("")
     } else {
         modifier = Modifier
         onClick = {
             clickListener()
             clicked = !clicked
         }
+        file = File(path)
     }
 
     Card(
@@ -247,11 +247,9 @@ fun ItemCard(
             .fillMaxWidth()
             .aspectRatio(1f)
             .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = bgColor),
+//        colors = CardDefaults.cardColors(containerColor = bgColor),
         onClick = onClick
     ) {
-
-        val file = File(path)
 
         Box(Modifier.clip(shape = RoundedCornerShape(8.dp))) {
 

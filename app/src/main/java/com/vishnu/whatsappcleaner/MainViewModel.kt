@@ -44,7 +44,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         val mutableLiveData = MutableLiveData<Pair<String, List<ListDirectory>>>(
             Pair(
                 formatFileSize(application, totalSize),
-                ListDirectory.getDirectoryList("com.vishnu.whatsappcleaner.loading")
+                ListDirectory.getDirectoryList(Constants._LOADING)
             )
         )
 
@@ -77,9 +77,15 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     fun getFileList(path: String): MutableLiveData<ArrayList<String>> {
         Log.i("vishnu", "getFileList: $path")
 
-        val list = ArrayList<String>()
+        val loadingList = ArrayList<String>()
 
-        val mutableLiveData = MutableLiveData<ArrayList<String>>()
+        for (i in 0 until 10) {
+            loadingList.add(Constants._LOADING)
+        }
+
+        val mutableLiveData = MutableLiveData<ArrayList<String>>(loadingList)
+
+        val list = ArrayList<String>()
 
         viewModelScope.launch(Dispatchers.Default) {
 

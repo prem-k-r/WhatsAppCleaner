@@ -9,6 +9,8 @@ object Constants {
 
     const val DETAILS_LIST_ITEM = "details_list_item"
 
+    const val _LOADING: String = "com.vishnu.whatsappcleaner.loading"
+
     final val EXTENSIONS_IMAGE = listOf(
         "jpg",
         "jpeg",
