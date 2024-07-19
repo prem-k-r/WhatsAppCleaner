@@ -1,7 +1,6 @@
 package com.vishnu.whatsappcleaner
 
 import android.app.Application
-import android.text.format.Formatter.formatFileSize
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -10,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
 
@@ -18,12 +16,15 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     private val storeData = StoreData(application.applicationContext)
 
+    private var totalSize: String? = null;
+    private var directoryList: List<ListDirectory> =
+        ListDirectory.getDirectoryList(Constants._LOADING)
+
     fun saveHomeUri(path: String) {
         Log.i("vishnu", "saveHomeUri: $path")
         viewModelScope.launch(Dispatchers.Default) {
             storeData.set(
-                Constants.WHATSAPP_HOME_URI,
-                "/storage/emulated/0/" + path
+                Constants.WHATSAPP_HOME_URI, "/storage/emulated/0/" + path
             )
         }
     }
@@ -39,36 +40,28 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     fun getDirectoryList(): MutableLiveData<Pair<String, List<ListDirectory>>> {
         Log.i("vishnu", "getDirectoryList() called")
 
-        var totalSize = 0L
-
         val mutableLiveData = MutableLiveData<Pair<String, List<ListDirectory>>>(
             Pair(
-                formatFileSize(application, totalSize),
-                ListDirectory.getDirectoryList(Constants._LOADING)
+                "0 B", directoryList
             )
         )
 
         viewModelScope.launch(Dispatchers.Default) {
-            storeData.get(Constants.WHATSAPP_HOME_URI)?.let { homeUri ->
 
-                val directoryList = ListDirectory.getDirectoryList(homeUri)
-
-                directoryList.forEach { directoryItem ->
-
-                    val size = getSize(directoryItem.path)
-
-                    directoryItem.size = formatFileSize(application, size)
-
-                    totalSize += size
-                }
-
-                mutableLiveData.postValue(
-                    Pair(
-                        formatFileSize(application, totalSize),
-                        directoryList
-                    )
+            if (totalSize == null) storeData.get(Constants.WHATSAPP_HOME_URI)?.let { homeUri ->
+                val pair = FileRepository.getDirectoryList(
+                    application, homeUri
                 )
+
+                totalSize = pair.first
+                directoryList = pair.second
             }
+
+            mutableLiveData.postValue(
+                Pair(
+                    totalSize!!, directoryList
+                )
+            )
         }
 
         return mutableLiveData;
@@ -77,71 +70,17 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     fun getFileList(path: String): MutableLiveData<ArrayList<String>> {
         Log.i("vishnu", "getFileList: $path")
 
-        val loadingList = ArrayList<String>()
-
-        for (i in 0 until 10) {
-            loadingList.add(Constants._LOADING)
-        }
-
-        val mutableLiveData = MutableLiveData<ArrayList<String>>(loadingList)
-
-        val list = ArrayList<String>()
+        val mutableLiveData = MutableLiveData<ArrayList<String>>(
+            FileRepository.getLoadingList()
+        )
 
         viewModelScope.launch(Dispatchers.Default) {
-
-            if (path.contains("Media/WhatsApp Voice Notes") or path.contains("Media/WhatsApp Video Notes"))
-                File(path)
-                    .walkTopDown()
-                    .forEach { f ->
-                        if (!f.isDirectory && f.name != ".nomedia")
-                            list.add(f.path)
-                    }
-            else
-                File(path).listFiles { dir, name ->
-
-                    val f = File("$dir/$name")
-
-                    if (!f.isDirectory && f.name != ".nomedia")
-                        list.add(f.path)
-
-                    true
-                }
-
-            mutableLiveData.postValue(list)
+            mutableLiveData.postValue(
+                FileRepository.getFileList(path)
+            )
         }
 
         return mutableLiveData;
-    }
-
-    fun getDirectoryList(path: String): MutableLiveData<ArrayList<String>> {
-        Log.i("vishnu", "getFileList: $path")
-
-        val list = ArrayList<String>()
-
-        val mutableLiveData = MutableLiveData<ArrayList<String>>()
-
-        viewModelScope.launch(Dispatchers.Default) {
-            File(path).list { dir, name ->
-                val f = File("$dir/$name")
-
-                if (f.isDirectory)
-                    list.add(f.path)
-
-                true
-            }
-
-            mutableLiveData.postValue(list)
-        }
-
-        return mutableLiveData;
-    }
-
-    private fun getSize(path: String): Long {
-        Log.i("vishnu", "getSize() called with: path = $path")
-        return File(path)
-            .walkTopDown()
-            .map { it.length() }
-            .sum()
     }
 }
 

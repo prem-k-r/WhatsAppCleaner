@@ -2335,6 +2335,7 @@
           <option value="NewClassNamingConvention" />
           <option value="JUnitTestClassNamingConvention" />
           <option value="CanBeFinal" />
+          <option value="UNCHECKED_CAST" />
         </list>
       </option>
     </inspection_tool>
