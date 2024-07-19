@@ -43,16 +43,13 @@ class MainActivity : ComponentActivity() {
 
                     viewModel.saveHomeUri(homePath)
 
-                    // terrible hack!
-                    val intent = intent;
-                    finish()
-                    startActivity(intent)
+                    restartActivity()
 
                 } else {
                     Toast.makeText(
                         this, "Permission not granted, exiting...", Toast.LENGTH_SHORT
                     ).show()
-                    finish()
+                    restartActivity()
                 }
             }
 
@@ -62,8 +59,8 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(
                         this, "Permission not granted, exiting...", Toast.LENGTH_SHORT
                     ).show()
-                    finish()
                 }
+                restartActivity()
             }
 
         viewModel = ViewModelProvider(
@@ -74,8 +71,15 @@ class MainActivity : ComponentActivity() {
             WhatsAppCleanerTheme {
 
                 var startDestination =
-                    if (contentResolver.persistedUriPermissions.isNotEmpty()) Constants.SCREEN_HOME
-                    else Constants.SCREEN_PERMISSION
+                    if (Environment.isExternalStorageManager() &&
+                        contentResolver.persistedUriPermissions.isNotEmpty()
+                    ) Constants.SCREEN_HOME
+                    else {
+                        Toast.makeText(
+                            this, "Please grant all permissions...", Toast.LENGTH_SHORT
+                        ).show()
+                        Constants.SCREEN_PERMISSION
+                    }
 
                 val navController = rememberNavController()
 
@@ -119,5 +123,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun restartActivity() {
+        // terrible hack!
+        val intent = intent;
+        finish()
+        startActivity(intent)
     }
 }

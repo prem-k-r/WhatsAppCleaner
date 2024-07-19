@@ -65,7 +65,7 @@ fun PermissionScreen(
                 content = { Text("Choose WhatsApp directory") },
                 onClick = {
                     chooseDirectory()
-                }
+                },
             )
         }
     }
