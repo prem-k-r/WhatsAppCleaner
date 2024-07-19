@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -14,14 +15,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
@@ -32,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -128,23 +138,28 @@ fun SingleCard(
     val bgColor = MaterialTheme.colorScheme.secondaryContainer
     val textColor = MaterialTheme.colorScheme.onSecondaryContainer
 
-    val modifier =
-        if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading"))
-            Modifier.shimmer()
-        else
-            Modifier
+    var onClick: () -> Unit
+    var modifier: Modifier
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = bgColor),
+    if (listDirectory.path.contains("com.vishnu.whatsappcleaner.loading")) {
+        modifier = Modifier.shimmer()
+        onClick = { }
+    } else {
+        modifier = Modifier
         onClick = {
             navController.currentBackStackEntry?.savedStateHandle?.apply {
                 set(Constants.DETAILS_LIST_ITEM, listDirectory)
             }
             navController.navigate(Constants.SCREEN_DETAILS)
         }
+    }
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = bgColor),
+        onClick = onClick
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
@@ -203,15 +218,27 @@ fun SingleCard(
 fun ItemCard(
     path: String,
     navController: NavHostController,
+    selected: Boolean,
+    clickListener: () -> Unit
 ) {
 
     val bgColor = MaterialTheme.colorScheme.secondaryContainer
 
-    val modifier =
-        if (path.toString().contains("com.vishnu.whatsappcleaner.loading"))
-            Modifier.shimmer()
-        else
-            Modifier
+    var clicked by remember { mutableStateOf(selected) }
+
+    var onClick: () -> Unit
+    var modifier: Modifier
+
+    if (path.toString().contains("com.vishnu.whatsappcleaner.loading")) {
+        modifier = Modifier.shimmer()
+        onClick = { }
+    } else {
+        modifier = Modifier
+        onClick = {
+            clickListener()
+            clicked = !clicked
+        }
+    }
 
     Card(
         modifier = modifier
@@ -219,24 +246,37 @@ fun ItemCard(
             .aspectRatio(1f)
             .padding(8.dp),
         colors = CardDefaults.cardColors(containerColor = bgColor),
-        onClick = {
-            // preview
-        }
+        onClick = onClick
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier
-                    .background(bgColor, shape = RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                GlideImage(
-                    model = path,
-                    contentScale = ContentScale.Crop,
-                    loading = placeholder(R.drawable.image),
-                    failure = placeholder(R.drawable.error),
-                    contentDescription = "details list item"
-                )
-            }
+        Box(Modifier.clip(shape = RoundedCornerShape(8.dp))) {
+
+            Checkbox(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(1f),
+                checked = clicked,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.background,
+                    checkmarkColor = MaterialTheme.colorScheme.onBackground,
+                    uncheckedColor = Color.Transparent,
+                    disabledCheckedColor = Color.Transparent,
+                    disabledUncheckedColor = Color.Transparent,
+                    disabledIndeterminateColor = Color.Transparent,
+                ),
+                onCheckedChange = {
+                    clicked = !clicked
+                }
+            )
+
+            GlideImage(
+                model = path,
+                contentScale = ContentScale.Crop,
+                loading = placeholder(R.drawable.image),
+                failure = placeholder(R.drawable.error),
+                contentDescription = "details list item"
+            )
+
         }
     }
+
 }

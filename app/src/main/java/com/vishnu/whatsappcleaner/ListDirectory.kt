@@ -6,6 +6,7 @@ data class ListDirectory(
     val name: String,
     val path: String,
     val icon: Int,
+    val hasSent: Boolean = true,
     var size: String = "0 B"
 ) :
     Serializable {
@@ -29,40 +30,54 @@ data class ListDirectory(
                     "$homePath/Media/WhatsApp Documents",
                     R.drawable.document
                 ),
-                ListDirectory(
-                    "Statuses",
-                    "$homePath/Media/.Statuses",
-                    R.drawable.status
-                ),
+
                 ListDirectory(
                     "Audios",
                     "$homePath/Media/WhatsApp Audio",
                     R.drawable.audio
                 ),
                 ListDirectory(
-                    "Wallpapers",
-                    "$homePath/Media/WallPaper",
-                    R.drawable.wallpaper
+                    "Statuses",
+                    "$homePath/Media/.Statuses",
+                    R.drawable.status,
+                    false
                 ),
+
+                ListDirectory(
+                    "Voice Notes",
+                    "$homePath/Media/WhatsApp Voice Notes",
+                    R.drawable.voice,
+                    false
+                ),
+                ListDirectory(
+                    "Video Notes",
+                    "$homePath/Media/WhatsApp VIdeo Notes",
+                    R.drawable.video_notes,
+                    false
+                ),
+
                 ListDirectory(
                     "GIFs",
                     "$homePath/Media/WhatsApp Animated Gifs",
                     R.drawable.gif
                 ),
                 ListDirectory(
+                    "Wallpapers",
+                    "$homePath/Media/WallPaper",
+                    R.drawable.wallpaper,
+                    false
+                ),
+                ListDirectory(
                     "Stickers",
                     "$homePath/Media/WhatsApp Stickers",
-                    R.drawable.sticker
+                    R.drawable.sticker,
+                    false
                 ),
                 ListDirectory(
                     "Profile Photos",
                     "$homePath/Media/WhatsApp Profile Photos",
-                    R.drawable.profile
-                ),
-                ListDirectory(
-                    "Voice Notes",
-                    "$homePath/Media/WhatsApp Voice Notes",
-                    R.drawable.voice
+                    R.drawable.profile,
+                    false
                 ),
             )
         }

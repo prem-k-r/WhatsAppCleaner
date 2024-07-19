@@ -62,8 +62,6 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                     totalSize += size
                 }
 
-                Log.e("vishnu", "getDirectoryList: $directoryList")
-
                 mutableLiveData.postValue(
                     Pair(
                         formatFileSize(application, totalSize),
@@ -84,7 +82,15 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         val mutableLiveData = MutableLiveData<ArrayList<String>>()
 
         viewModelScope.launch(Dispatchers.Default) {
-            File(path).listFiles { dir, name -> list.add("$dir/$name") }
+            File(path).listFiles { dir, name ->
+
+                val f = File("$dir/$name")
+
+                if (!f.isDirectory)
+                    list.add(f.path)
+
+                true
+            }
 
             mutableLiveData.postValue(list)
         }
