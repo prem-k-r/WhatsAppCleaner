@@ -86,7 +86,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
                 val f = File("$dir/$name")
 
-                if (!f.isDirectory)
+                if (!f.isDirectory && f.name != ".nomedia")
                     list.add(f.path)
 
                 true

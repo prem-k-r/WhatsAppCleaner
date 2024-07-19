@@ -8,4 +8,51 @@ object Constants {
     const val SCREEN_DETAILS = "details"
 
     const val DETAILS_LIST_ITEM = "details_list_item"
+
+    final val EXTENSIONS_IMAGE = listOf(
+        "jpg",
+        "jpeg",
+        "bmp",
+        "raw",
+        "png_a",
+        "png",
+        "webp_a",
+        "webp",
+        "animated_webp",
+        "avif",
+        "animated_avif",
+    )
+
+    final val EXTENSIONS_VIDEO = listOf(
+        "mp4",
+        "mpeg4",
+        "webm",
+        "avi",
+        "gif",
+        "3gp",
+        "avi",
+    )
+
+    final val EXTENSIONS_DOCS = listOf(
+        "txt",
+        "pdf",
+        "doc",
+        "odt",
+        "ppt",
+        "pptx",
+        "odp",
+        "xls",
+        "xlsx",
+        "ods",
+    )
+
+    final val EXTENSIONS_AUDIO = listOf(
+        "aac",
+        "mp3",
+        "flac",
+        "opus",
+        "midi",
+        "wav",
+        "ogg",
+    )
 }
