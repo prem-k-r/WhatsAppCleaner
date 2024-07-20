@@ -20,11 +20,11 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private var directoryList: List<ListDirectory> =
         ListDirectory.getDirectoryList(Constants._LOADING)
 
-    fun saveHomeUri(path: String) {
-        Log.i("vishnu", "saveHomeUri: $path")
+    fun saveHomeUri(homePath: String) {
+        Log.i("vishnu", "saveHomeUri: $homePath")
         viewModelScope.launch(Dispatchers.Default) {
             storeData.set(
-                Constants.WHATSAPP_HOME_URI, "/storage/emulated/0/" + path
+                Constants.WHATSAPP_HOME_URI, homePath
             )
         }
     }
@@ -77,6 +77,20 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         viewModelScope.launch(Dispatchers.Default) {
             mutableLiveData.postValue(
                 FileRepository.getFileList(path)
+            )
+        }
+
+        return mutableLiveData;
+    }
+
+    fun listDirectories(path: String): MutableLiveData<ArrayList<String>> {
+        Log.i("vishnu", "listDirectories: $path")
+
+        val mutableLiveData = MutableLiveData<ArrayList<String>>(ArrayList())
+
+        viewModelScope.launch(Dispatchers.Default) {
+            mutableLiveData.postValue(
+                FileRepository.getDirectoryList(path)
             )
         }
 

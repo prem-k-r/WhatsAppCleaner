@@ -66,6 +66,25 @@ class FileRepository {
         }
 
         @JvmStatic
+        public suspend fun getDirectoryList(path: String): ArrayList<String> {
+            Log.e("vishnu", "FileRepository#getDirectoryList: $path")
+
+            val list = ArrayList<String>()
+
+            File(path).listFiles { dir, name ->
+
+                val f = File("$dir/$name")
+
+                if (f.isDirectory)
+                    list.add(f.path)
+
+                true
+            }
+
+            return list
+        }
+
+        @JvmStatic
         public fun getLoadingList(): ArrayList<String> {
             val loadingList = ArrayList<String>()
 

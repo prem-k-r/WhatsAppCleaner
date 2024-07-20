@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.vishnu.whatsappcleaner.ui.theme.WhatsAppCleanerTheme
+import java.io.File
 
 
 class MainActivity : ComponentActivity() {
@@ -34,23 +35,38 @@ class MainActivity : ComponentActivity() {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == RESULT_OK && Build.VERSION.SDK_INT >= VERSION_CODES.Q && result.data != null && result.data!!.data != null && result.data!!.data!!.path != null) {
 
-                    val homePath = result.data!!.data!!.path!!.split(":")[1]
+                    val relativePath = result.data!!.data!!.path!!.split(":")[1]
 
-                    contentResolver.takePersistableUriPermission(
-                        result.data!!.data!!,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    )
+                    val absolutePath =
+                        Environment.getExternalStorageDirectory().absolutePath + File.separator + relativePath
 
-                    viewModel.saveHomeUri(homePath)
+                    viewModel.listDirectories(absolutePath).observeForever {
 
-                    restartActivity()
+                        if (it.toString().contains("/Media")
+                            && it.toString().contains("/Databases")
+                        ) {
 
+                            contentResolver.takePersistableUriPermission(
+                                result.data!!.data!!,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            )
+
+                            viewModel.saveHomeUri(absolutePath)
+                        } else {
+                            Toast.makeText(
+                                this,
+                                "Wrong dierctory selected, please select the right directory...",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 } else {
                     Toast.makeText(
                         this, "Permission not granted, exiting...", Toast.LENGTH_SHORT
                     ).show()
-                    restartActivity()
                 }
+
+                restartActivity()
             }
 
         val storagePermissionResultLauncher =
@@ -118,7 +134,6 @@ class MainActivity : ComponentActivity() {
                     composable(route = Constants.SCREEN_DETAILS) {
                         DetailsScreen(navController, viewModel)
                     }
-
 
                 }
             }
