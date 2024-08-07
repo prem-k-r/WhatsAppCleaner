@@ -86,7 +86,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     fun listDirectories(path: String): MutableLiveData<ArrayList<String>> {
         Log.i("vishnu", "listDirectories: $path")
 
-        val mutableLiveData = MutableLiveData<ArrayList<String>>(ArrayList())
+        val mutableLiveData = MutableLiveData<ArrayList<String>>()
 
         viewModelScope.launch(Dispatchers.Default) {
             mutableLiveData.postValue(
