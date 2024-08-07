@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -53,8 +57,7 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 fun Title(modifier: Modifier, text: String) {
     Text(
-        modifier = modifier
-            .padding(8.dp),
+        modifier = modifier.padding(8.dp),
         text = text,
         fontSize = 36.sp,
         textAlign = TextAlign.Start,
@@ -63,7 +66,7 @@ fun Title(modifier: Modifier, text: String) {
 }
 
 @Composable
-fun Banner(modifier: Modifier, text: String) {
+fun Banner(modifier: Modifier, text: String, handleCleanup: () -> Unit = {}) {
 
     val bgColor = MaterialTheme.colorScheme.primaryContainer
     val textColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -74,11 +77,8 @@ fun Banner(modifier: Modifier, text: String) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val mod =
-            if (text.equals("0 B"))
-                Modifier.shimmer()
-            else
-                Modifier
+        val mod = if (text.equals("0 B")) Modifier.shimmer()
+        else Modifier
 
         Box(
             mod
@@ -86,8 +86,7 @@ fun Banner(modifier: Modifier, text: String) {
                 .fillMaxWidth(0.4f)
                 .aspectRatio(1f)
                 .shadow(elevation = 16.dp, shape = CircleShape)
-                .background(bgColor, shape = CircleShape),
-            contentAlignment = Alignment.Center
+                .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -108,23 +107,21 @@ fun Banner(modifier: Modifier, text: String) {
             )
         }
 
-        TextButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+        TextButton(modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = bgColor),
             shape = RoundedCornerShape(64.dp),
             contentPadding = PaddingValues(12.dp),
-            onClick = { }
-        ) {
+            onClick = {
+                handleCleanup()
+            }) {
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = textColor)) {
                         append("Cleanup")
                     }
-                },
-                fontWeight = FontWeight.Medium,
-                style = MaterialTheme.typography.headlineMedium
+                }, fontWeight = FontWeight.Medium, style = MaterialTheme.typography.headlineMedium
             )
         }
     }
@@ -170,8 +167,7 @@ fun SingleCard(
                     .fillMaxWidth(0.2f)
                     .aspectRatio(1f)
                     .shadow(elevation = 8.dp, shape = CircleShape)
-                    .background(bgColor, shape = CircleShape),
-                contentAlignment = Alignment.Center
+                    .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
             ) {
 
                 Icon(
@@ -217,12 +213,10 @@ fun SingleCard(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemCard(
-    listFile: ListFile,
-    navController: NavHostController,
-    selected: Boolean,
-    clickListener: () -> Unit
+    listFile: ListFile, navController: NavHostController, clickListener: () -> Unit
 ) {
-    var clicked by remember { mutableStateOf(selected) }
+    // only for keeping track of the UI
+    var selected by remember { mutableStateOf(listFile.isSelected) }
 
     var onClick: () -> Unit
     var modifier: Modifier
@@ -234,48 +228,43 @@ fun ItemCard(
         modifier = Modifier
         onClick = {
             clickListener()
-            clicked = !clicked
         }
     }
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .padding(8.dp),
-//        colors = CardDefaults.cardColors(containerColor = bgColor),
-        onClick = onClick
-    ) {
+    Card(modifier = modifier
+        .fillMaxWidth()
+        .aspectRatio(1f)
+        .padding(8.dp), onClick = {
+        onClick()
+    }) {
 
         Box(Modifier.clip(shape = RoundedCornerShape(8.dp))) {
 
-            // TODO:
-//            Checkbox(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .zIndex(1f),
-//                checked = clicked,
-//                colors = CheckboxDefaults.colors(
-//                    checkedColor = MaterialTheme.colorScheme.background,
-//                    checkmarkColor = MaterialTheme.colorScheme.onBackground,
-//                    uncheckedColor = Color.Transparent,
-//                    disabledCheckedColor = Color.Transparent,
-//                    disabledUncheckedColor = Color.Transparent,
-//                    disabledIndeterminateColor = Color.Transparent,
-//                ),
-//                onCheckedChange = {
-//                    clicked = !clicked
-//                }
-//            )
+            Checkbox(modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1f),
+                checked = selected,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.background,
+                    checkmarkColor = MaterialTheme.colorScheme.onBackground,
+                    uncheckedColor = Color.Transparent,
+                    disabledCheckedColor = Color.Transparent,
+                    disabledUncheckedColor = Color.Transparent,
+                    disabledIndeterminateColor = Color.Transparent,
+                ),
+                onCheckedChange = {
+                    onClick()
 
-            if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE)
-                GlideImage(
-                    model = listFile,
-                    contentScale = ContentScale.Crop,
-                    loading = placeholder(R.drawable.image),
-                    failure = placeholder(R.drawable.error),
-                    contentDescription = "details list item"
-                )
+                    selected = !selected
+                })
+
+            if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
+                model = listFile,
+                contentScale = ContentScale.Crop,
+                loading = placeholder(R.drawable.image),
+                failure = placeholder(R.drawable.error),
+                contentDescription = "details list item"
+            )
             else if (listFile.extension.lowercase() in Constants.EXTENSIONS_VIDEO) {
                 GlideImage(
                     model = listFile,

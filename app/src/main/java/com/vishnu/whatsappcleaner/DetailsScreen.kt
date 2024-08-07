@@ -1,5 +1,6 @@
 package com.vishnu.whatsappcleaner
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -55,7 +56,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     var fileList = remember { mutableStateListOf<ListFile>() }
     var sentList = remember { mutableStateListOf<ListFile>() }
 
-    var selectedItems = ArrayList<String>()
+//    var selectedItems = ArrayList<ListFile>()
 
     LaunchedEffect(key1 = null) {
         viewModel.getFileList(listDirectory.path).observeForever {
@@ -63,8 +64,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             fileList.addAll(it)
         }
 
-        if (listDirectory.hasSent)
-            viewModel.getFileList("${listDirectory.path}%2FSent").observeForever {
+        if (listDirectory.hasSent) viewModel.getFileList("${listDirectory.path}%2FSent")
+            .observeForever {
                 sentList.clear()
                 sentList.addAll(it)
             }
@@ -84,7 +85,11 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     .align(Alignment.Start), stringResource(R.string.app_name)
             )
 
-            Banner(Modifier.padding(16.dp), listDirectory.size)
+            Banner(Modifier.padding(16.dp), listDirectory.size) {
+                Log.e("vishnu", "DetailsScreen: ${
+                    fileList.filter { it.isSelected }
+                }")
+            }
 
             var pageTitle by remember { mutableStateOf("Received") }
 
@@ -93,8 +98,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             })
 
             HorizontalPager(
-                modifier = Modifier.weight(1f),
-                state = pagerState
+                modifier = Modifier.weight(1f), state = pagerState
             ) { page ->
 
                 var list: SnapshotStateList<ListFile>
@@ -118,7 +122,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                         columns = GridCells.Fixed(3),
                     ) {
                         items(list) {
-                            ItemCard(it, navController, it.isSelected) {
+                            ItemCard(it, navController) {
                                 it.isSelected = !it.isSelected
                             }
                         }
@@ -132,55 +136,53 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 )
             }
 
-            if (listDirectory.hasSent)
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
+            if (listDirectory.hasSent) Row(
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
 
-                    val coroutineScope = rememberCoroutineScope()
-                    val arr = arrayOf("Received", "Sent")
+                val coroutineScope = rememberCoroutineScope()
+                val arr = arrayOf("Received", "Sent")
 
-                    for (s in arr) {
+                for (s in arr) {
 
-                        TextButton(modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(4.dp, 8.dp, 4.dp, 0.dp)
-                            .border(
-                                BorderStroke(
-                                    2.dp,
-                                    if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
-                                    else MaterialTheme.colorScheme.background,
-                                ),
-                                RoundedCornerShape(64.dp),
+                    TextButton(modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(4.dp, 8.dp, 4.dp, 0.dp)
+                        .border(
+                            BorderStroke(
+                                2.dp,
+                                if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
+                                else MaterialTheme.colorScheme.background,
                             ),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = if (arr[pagerState.settledPage] == s) MaterialTheme.colorScheme.primaryContainer
-                                else MaterialTheme.colorScheme.background
-                            ),
-                            shape = RoundedCornerShape(64.dp),
-                            contentPadding = PaddingValues(4.dp),
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.scrollToPage(
-                                        arr.indexOf(s)
-                                    )
-                                }
+                            RoundedCornerShape(64.dp),
+                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (arr[pagerState.settledPage] == s) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.background
+                        ),
+                        shape = RoundedCornerShape(64.dp),
+                        contentPadding = PaddingValues(4.dp),
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.scrollToPage(
+                                    arr.indexOf(s)
+                                )
                             }
-                        ) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
-                                        append(s)
-                                    }
-                                },
-                                style = MaterialTheme.typography.titleLarge,
-                            )
-                        }
-
+                        }) {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                                    append(s)
+                                }
+                            },
+                            style = MaterialTheme.typography.titleLarge,
+                        )
                     }
 
                 }
+
+            }
 
         }
     }
