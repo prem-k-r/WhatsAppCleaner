@@ -10,12 +10,10 @@ class FileRepository {
 
         @JvmStatic
         public suspend fun getDirectoryList(
-            context: Context,
-            homePath: String
+            context: Context, homePath: String
         ): Pair<String, List<ListDirectory>> {
             Log.i(
-                "vishnu",
-                "FileRepository#getDirectoryList: $homePath"
+                "vishnu", "FileRepository#getDirectoryList: $homePath"
             )
 
             var totalSize = 0L
@@ -32,35 +30,38 @@ class FileRepository {
             }
 
             return Pair(
-                formatFileSize(context, totalSize),
-                directoryList
+                formatFileSize(context, totalSize), directoryList
             )
         }
 
         @JvmStatic
-        public suspend fun getFileList(path: String): ArrayList<String> {
+        public suspend fun getFileList(context: Context, path: String): ArrayList<ListFile> {
             Log.e("vishnu", "FileRepository#getFileList: $path")
 
-            val list = ArrayList<String>()
+            val list = ArrayList<ListFile>()
 
             // flattening...
-            if (path.contains("Media/WhatsApp Voice Notes") or path.contains("Media/WhatsApp Video Notes"))
-                File(path)
-                    .walkTopDown()
-                    .forEach { f ->
-                        if (!f.isDirectory && f.name != ".nomedia")
-                            list.add(f.path)
-                    }
-            else
-                File(path).listFiles { dir, name ->
+            if (path.contains("Media/WhatsApp Voice Notes") or path.contains("Media/WhatsApp Video Notes")) File(
+                path
+            ).walkTopDown().forEach { f ->
+                if (!f.isDirectory && f.name != ".nomedia") list.add(
+                    ListFile(
+                        f.path, formatFileSize(context, getSize(f.path))
+                    )
+                )
+            }
+            else File(path).listFiles { dir, name ->
 
-                    val f = File("$dir/$name")
+                val f = File("$dir/$name")
 
-                    if (!f.isDirectory && f.name != ".nomedia")
-                        list.add(f.path)
+                if (!f.isDirectory && f.name != ".nomedia") list.add(
+                    ListFile(
+                        f.path, formatFileSize(context, getSize(f.path))
+                    )
+                )
 
-                    true
-                }
+                true
+            }
 
             return list
         }
@@ -75,8 +76,7 @@ class FileRepository {
 
                 val f = File("$dir/$name")
 
-                if (f.isDirectory)
-                    list.add(f.path)
+                if (f.isDirectory) list.add(f.path)
 
                 true
             }
@@ -85,21 +85,21 @@ class FileRepository {
         }
 
         @JvmStatic
-        public fun getLoadingList(): ArrayList<String> {
-            val loadingList = ArrayList<String>()
+        public fun getLoadingList(): ArrayList<ListFile> {
+            val loadingList = ArrayList<ListFile>()
 
-            for (i in 0 until 10)
-                loadingList.add(Constants._LOADING)
+            for (i in 0 until 10) loadingList.add(
+                ListFile(
+                    Constants._LOADING, "0 B"
+                )
+            )
 
             return loadingList
         }
 
-        private suspend fun getSize(path: String): Long {
+        private fun getSize(path: String): Long {
             Log.i("vishnu", "getSize() called with: path = $path")
-            return File(path)
-                .walkTopDown()
-                .map { it.length() }
-                .sum()
+            return File(path).walkTopDown().map { it.length() }.sum()
         }
 
     }

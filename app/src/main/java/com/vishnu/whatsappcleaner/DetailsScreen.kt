@@ -52,8 +52,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     if (listDirectory == null) return Surface {}
 
-    var fileList = remember { mutableStateListOf<String>() }
-    var sentList = remember { mutableStateListOf<String>() }
+    var fileList = remember { mutableStateListOf<ListFile>() }
+    var sentList = remember { mutableStateListOf<ListFile>() }
 
     var selectedItems = ArrayList<String>()
 
@@ -97,7 +97,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 state = pagerState
             ) { page ->
 
-                var list: SnapshotStateList<String>
+                var list: SnapshotStateList<ListFile>
 
                 when (page) {
                     0 -> {
@@ -118,9 +118,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                         columns = GridCells.Fixed(3),
                     ) {
                         items(list) {
-                            ItemCard(it, navController, selectedItems.contains(it)) {
-                                if (!selectedItems.contains(it)) selectedItems.add(it)
-                                else selectedItems.remove(it)
+                            ItemCard(it, navController, it.isSelected) {
+                                it.isSelected = !it.isSelected
                             }
                         }
                     }

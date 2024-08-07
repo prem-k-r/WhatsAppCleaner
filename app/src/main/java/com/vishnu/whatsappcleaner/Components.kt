@@ -48,7 +48,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.valentinilk.shimmer.shimmer
-import java.io.File
 
 
 @Composable
@@ -218,7 +217,7 @@ fun SingleCard(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemCard(
-    path: String,
+    listFile: ListFile,
     navController: NavHostController,
     selected: Boolean,
     clickListener: () -> Unit
@@ -227,19 +226,16 @@ fun ItemCard(
 
     var onClick: () -> Unit
     var modifier: Modifier
-    var file: File
 
-    if (path.toString().contains(Constants._LOADING)) {
+    if (listFile.toString().contains(Constants._LOADING)) {
         modifier = Modifier.shimmer()
         onClick = { }
-        file = File("")
     } else {
         modifier = Modifier
         onClick = {
             clickListener()
             clicked = !clicked
         }
-        file = File(path)
     }
 
     Card(
@@ -272,17 +268,17 @@ fun ItemCard(
 //                }
 //            )
 
-            if (file.extension.lowercase() in Constants.EXTENSIONS_IMAGE)
+            if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE)
                 GlideImage(
-                    model = path,
+                    model = listFile,
                     contentScale = ContentScale.Crop,
                     loading = placeholder(R.drawable.image),
                     failure = placeholder(R.drawable.error),
                     contentDescription = "details list item"
                 )
-            else if (file.extension.lowercase() in Constants.EXTENSIONS_VIDEO) {
+            else if (listFile.extension.lowercase() in Constants.EXTENSIONS_VIDEO) {
                 GlideImage(
-                    model = path,
+                    model = listFile,
                     contentScale = ContentScale.Crop,
                     loading = placeholder(R.drawable.image),
                     failure = placeholder(R.drawable.error),
@@ -301,7 +297,7 @@ fun ItemCard(
                     painter = painterResource(id = R.drawable.video),
                     contentDescription = "video",
                 )
-            } else if (file.extension.lowercase() in Constants.EXTENSIONS_DOCS) {
+            } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_DOCS) {
 
                 Column {
 
@@ -321,7 +317,7 @@ fun ItemCard(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .padding(8.dp),
-                        text = file.name,
+                        text = listFile.name,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
                         minLines = 2,
@@ -329,7 +325,7 @@ fun ItemCard(
                     )
                 }
 
-            } else if (file.extension.lowercase() in Constants.EXTENSIONS_AUDIO) {
+            } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_AUDIO) {
 
                 Column {
 
@@ -349,7 +345,7 @@ fun ItemCard(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .padding(8.dp),
-                        text = file.name,
+                        text = listFile.name,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
                         minLines = 2,
@@ -377,7 +373,7 @@ fun ItemCard(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .padding(8.dp),
-                        text = file.name,
+                        text = listFile.name,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
                         minLines = 2,

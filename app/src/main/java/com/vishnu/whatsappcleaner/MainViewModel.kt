@@ -67,16 +67,16 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData;
     }
 
-    fun getFileList(path: String): MutableLiveData<ArrayList<String>> {
+    fun getFileList(path: String): MutableLiveData<ArrayList<ListFile>> {
         Log.i("vishnu", "getFileList: $path")
 
-        val mutableLiveData = MutableLiveData<ArrayList<String>>(
+        val mutableLiveData = MutableLiveData<ArrayList<ListFile>>(
             FileRepository.getLoadingList()
         )
 
         viewModelScope.launch(Dispatchers.Default) {
             mutableLiveData.postValue(
-                FileRepository.getFileList(path)
+                FileRepository.getFileList(application, path)
             )
         }
 
