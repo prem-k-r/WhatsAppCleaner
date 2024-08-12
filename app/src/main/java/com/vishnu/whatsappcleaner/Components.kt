@@ -1,6 +1,8 @@
 package com.vishnu.whatsappcleaner
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,8 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,8 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -210,7 +209,7 @@ fun SingleCard(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ItemCard(
     listFile: ListFile, navController: NavHostController, clickListener: () -> Unit
@@ -219,44 +218,59 @@ fun ItemCard(
     var selected by remember { mutableStateOf(listFile.isSelected) }
 
     var onClick: () -> Unit
+    var onLongClick: () -> Unit
     var modifier: Modifier
 
     if (listFile.toString().contains(Constants._LOADING)) {
         modifier = Modifier.shimmer()
         onClick = { }
+        onLongClick = { }
     } else {
         modifier = Modifier
         onClick = {
             clickListener()
         }
+        onLongClick = {
+
+        }
     }
 
-    Card(modifier = modifier
-        .fillMaxWidth()
-        .aspectRatio(1f)
-        .padding(8.dp), onClick = {
-        onClick()
-    }) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .padding(8.dp)
+    ) {
 
-        Box(Modifier.clip(shape = RoundedCornerShape(8.dp))) {
+        Box(
+            Modifier
+                .clip(shape = RoundedCornerShape(8.dp))
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            onLongClick()
+                        },
+                        onTap = {
+                            selected = !selected
+                            onClick()
+                        }
+                    )
+                }
+        ) {
 
-            Checkbox(modifier = Modifier
-                .fillMaxSize()
-                .zIndex(1f),
-                checked = selected,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = MaterialTheme.colorScheme.background,
-                    checkmarkColor = MaterialTheme.colorScheme.onBackground,
-                    uncheckedColor = Color.Transparent,
-                    disabledCheckedColor = Color.Transparent,
-                    disabledUncheckedColor = Color.Transparent,
-                    disabledIndeterminateColor = Color.Transparent,
-                ),
-                onCheckedChange = {
-                    onClick()
-
-                    selected = !selected
-                })
+            if (selected)
+                Icon(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.Center)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
+                        .padding(8.dp)
+                        .aspectRatio(1f)
+                        .zIndex(4f),
+                    painter = painterResource(id = R.drawable.check_circle),
+                    contentDescription = "checkbox",
+                )
 
             if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
                 model = listFile,
