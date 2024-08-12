@@ -96,6 +96,23 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
         return mutableLiveData;
     }
+
+    fun delete(fileList: List<ListFile>): MutableLiveData<Boolean> {
+        Log.i("vishnu", "delete() called with: fileList = $fileList")
+
+        val mutableLiveData = MutableLiveData<Boolean>(true)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            fileList.forEach {
+                if (it.isSelected) {
+                    it.delete()
+                }
+            }
+            mutableLiveData.postValue(false)
+        }
+
+        return mutableLiveData
+    }
 }
 
 class MainViewModelFactory(private val application: Application) : ViewModelProvider.Factory {

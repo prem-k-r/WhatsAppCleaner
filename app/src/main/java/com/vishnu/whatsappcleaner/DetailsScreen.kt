@@ -1,6 +1,5 @@
 package com.vishnu.whatsappcleaner
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,9 +57,9 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     var fileList = remember { mutableStateListOf<ListFile>() }
     var sentList = remember { mutableStateListOf<ListFile>() }
 
-//    var selectedItems = ArrayList<ListFile>()
+    var isInProgress by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = null) {
+    LaunchedEffect(isInProgress) {
         viewModel.getFileList(listDirectory.path).observeForever {
             fileList.clear()
             fileList.addAll(it)
@@ -86,9 +87,11 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             )
 
             Banner(Modifier.padding(16.dp), listDirectory.size) {
-                Log.e("vishnu", "DetailsScreen: ${
+                viewModel.delete(
                     fileList.filter { it.isSelected }
-                }")
+                ).observeForever {
+                    isInProgress = it
+                }
             }
 
             var pageTitle by remember { mutableStateOf("Received") }
@@ -96,6 +99,14 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             val pagerState = rememberPagerState(pageCount = {
                 if (listDirectory.hasSent) 2 else 1
             })
+
+            if (isInProgress)
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(8.dp),
+                )
 
             HorizontalPager(
                 modifier = Modifier.weight(1f), state = pagerState
