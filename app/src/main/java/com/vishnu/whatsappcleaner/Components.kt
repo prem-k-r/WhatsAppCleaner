@@ -66,7 +66,7 @@ fun Title(modifier: Modifier, text: String) {
 }
 
 @Composable
-fun Banner(modifier: Modifier, text: String, handleCleanup: () -> Unit = {}) {
+fun Banner(modifier: Modifier, text: String, handleCleanup: () -> Unit) {
 
     val bgColor = MaterialTheme.colorScheme.primaryContainer
     val textColor = MaterialTheme.colorScheme.onPrimaryContainer
