@@ -2,7 +2,6 @@ package com.vishnu.whatsappcleaner
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -30,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -224,84 +224,73 @@ fun ItemCard(
     // only for keeping track of the UI
     var selected by remember { mutableStateOf(listFile.isSelected) }
 
-    var onClick: () -> Unit = {}
-    var onLongClick: () -> Unit = {}
-    var modifier: Modifier
-
-    if (listFile.toString().contains(Constants._LOADING)) {
-        modifier = Modifier.shimmer()
-    } else {
-        modifier = Modifier
-        onClick = {
-            clickListener()
-        }
-        onLongClick = {
-            try {
-                startActivity(
-                    navController.context,
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        FileProvider.getUriForFile(
-                            navController.context,
-                            navController.context.packageName + ".provider",
-                            listFile
-                        )
-                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                    null
-                )
-            } catch (e: ActivityNotFoundException) {
-                e.printStackTrace()
-                Toast
-                    .makeText(
-                        navController.context,
-                        "No application found to open this file.",
-                        Toast.LENGTH_SHORT
-                    )
-                    .show()
-            } catch (e: IllegalArgumentException) {
-                e.printStackTrace()
-
-                Log.e("vishnu", "$listFile")
-
-                Toast
-                    .makeText(
-                        navController.context,
-                        "Something went wrong...",
-                        Toast.LENGTH_SHORT
-                    )
-                    .show()
-            }
-        }
-    }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .padding(8.dp)
-    ) {
-
-        Box(
+    var modifier =
+        if (listFile.filePath.toString().contains(Constants._LOADING))
+            Modifier.shimmer()
+        else
             Modifier
-                .fillMaxSize()
-                .clip(shape = RoundedCornerShape(8.dp))
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = {
-                            Log.e("vishnu", "internal() called")
 
-                            onLongClick()
-                        },
-                        onTap = {
-                            selected = !selected
-                            onClick()
-                        }
-                    )
-                }
+    key(listFile) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(8.dp)
         ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .pointerInput(Unit) {
+                        detectTapGestures(onLongPress = {
 
-            if (selected)
-                Icon(
+                            if (listFile.filePath
+                                    .toString()
+                                    .contains(Constants._LOADING)
+                            ) return@detectTapGestures
+
+                            try {
+                                startActivity(
+                                    navController.context, Intent(
+                                        Intent.ACTION_VIEW, FileProvider.getUriForFile(
+                                            navController.context,
+                                            navController.context.packageName + ".provider",
+                                            listFile
+                                        )
+                                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null
+                                )
+                            } catch (e: ActivityNotFoundException) {
+                                e.printStackTrace()
+                                Toast
+                                    .makeText(
+                                        navController.context,
+                                        "No application found to open this file.",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            } catch (e: IllegalArgumentException) {
+                                e.printStackTrace()
+                                Toast
+                                    .makeText(
+                                        navController.context,
+                                        "Something went wrong...",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            }
+                        }, onTap = {
+                            selected = !selected
+
+                            if (listFile.filePath
+                                    .toString()
+                                    .contains(Constants._LOADING)
+                            ) return@detectTapGestures
+
+                            clickListener()
+                        })
+                    }) {
+
+                if (selected) Icon(
                     modifier = Modifier
                         .size(32.dp)
                         .align(Alignment.Center)
@@ -314,116 +303,117 @@ fun ItemCard(
                     contentDescription = "checkbox",
                 )
 
-            if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
-                model = listFile,
-                contentScale = ContentScale.Crop,
-                loading = placeholder(R.drawable.image),
-                failure = placeholder(R.drawable.error),
-                contentDescription = "details list item"
-            )
-            else if (listFile.extension.lowercase() in Constants.EXTENSIONS_VIDEO) {
-                GlideImage(
+                if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
                     model = listFile,
                     contentScale = ContentScale.Crop,
                     loading = placeholder(R.drawable.image),
                     failure = placeholder(R.drawable.error),
                     contentDescription = "details list item"
                 )
-
-                Icon(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .align(Alignment.Center)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
-                        .padding(8.dp)
-                        .aspectRatio(1f)
-                        .zIndex(2f),
-                    painter = painterResource(id = R.drawable.video),
-                    contentDescription = "video",
-                )
-            } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_DOCS) {
-
-                Column {
+                else if (listFile.extension.lowercase() in Constants.EXTENSIONS_VIDEO) {
+                    GlideImage(
+                        model = listFile,
+                        contentScale = ContentScale.Crop,
+                        loading = placeholder(R.drawable.image),
+                        failure = placeholder(R.drawable.error),
+                        contentDescription = "details list item"
+                    )
 
                     Icon(
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .fillMaxHeight()
+                            .size(32.dp)
+                            .align(Alignment.Center)
+                            .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
-                            .padding(8.dp),
-                        painter = painterResource(id = R.drawable.document),
-                        contentDescription = "doc",
+                            .padding(8.dp)
+                            .aspectRatio(1f)
+                            .zIndex(2f),
+                        painter = painterResource(id = R.drawable.video),
+                        contentDescription = "video",
                     )
+                } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_DOCS) {
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(8.dp),
-                        text = listFile.name,
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                        minLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                    Column {
 
-            } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_AUDIO) {
+                        Icon(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
+                                .padding(8.dp),
+                            painter = painterResource(id = R.drawable.document),
+                            contentDescription = "doc",
+                        )
 
-                Column {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(8.dp),
+                            text = listFile.name,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            minLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
 
-                    Icon(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
-                            .padding(8.dp),
-                        painter = painterResource(id = R.drawable.audio),
-                        contentDescription = "doc",
-                    )
+                } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_AUDIO) {
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(8.dp),
-                        text = listFile.name,
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                        minLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                    Column {
 
-            } else {
+                        Icon(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
+                                .padding(8.dp),
+                            painter = painterResource(id = R.drawable.audio),
+                            contentDescription = "doc",
+                        )
 
-                Column {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(8.dp),
+                            text = listFile.name,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            minLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
 
-                    Icon(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
-                            .padding(8.dp),
-                        painter = painterResource(id = R.drawable.unknown),
-                        contentDescription = "doc",
-                    )
+                } else {
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(8.dp),
-                        text = listFile.name,
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                        minLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Column {
+
+                        Icon(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
+                                .padding(8.dp),
+                            painter = painterResource(id = R.drawable.unknown),
+                            contentDescription = "doc",
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(8.dp),
+                            text = listFile.name,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            minLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }

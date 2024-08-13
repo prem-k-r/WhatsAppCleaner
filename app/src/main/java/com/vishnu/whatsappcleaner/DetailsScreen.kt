@@ -32,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -94,8 +93,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 }
             }
 
-            var pageTitle by remember { mutableStateOf("Received") }
-
             val pagerState = rememberPagerState(pageCount = {
                 if (listDirectory.hasSent) 2 else 1
             })
@@ -112,20 +109,9 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 modifier = Modifier.weight(1f), state = pagerState
             ) { page ->
 
-                var list: SnapshotStateList<ListFile>
-
-                when (page) {
-                    0 -> {
-                        if (!pagerState.isScrollInProgress) pageTitle = "Received"
-                        list = fileList
-                    }
-
-                    else -> {
-
-                        pageTitle = "Sent"
-                        list = sentList
-                    }
-                }
+                var list =
+                    if (page == 0) fileList
+                    else sentList
 
                 if (list.isNotEmpty()) {
                     LazyVerticalGrid(
