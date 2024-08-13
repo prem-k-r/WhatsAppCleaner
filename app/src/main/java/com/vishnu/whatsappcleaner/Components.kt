@@ -1,5 +1,9 @@
 package com.vishnu.whatsappcleaner
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,6 +51,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -217,21 +224,53 @@ fun ItemCard(
     // only for keeping track of the UI
     var selected by remember { mutableStateOf(listFile.isSelected) }
 
-    var onClick: () -> Unit
-    var onLongClick: () -> Unit
+    var onClick: () -> Unit = {}
+    var onLongClick: () -> Unit = {}
     var modifier: Modifier
 
     if (listFile.toString().contains(Constants._LOADING)) {
         modifier = Modifier.shimmer()
-        onClick = { }
-        onLongClick = { }
     } else {
         modifier = Modifier
         onClick = {
             clickListener()
         }
         onLongClick = {
+            try {
+                startActivity(
+                    navController.context,
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        FileProvider.getUriForFile(
+                            navController.context,
+                            navController.context.packageName + ".provider",
+                            listFile
+                        )
+                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                    null
+                )
+            } catch (e: ActivityNotFoundException) {
+                e.printStackTrace()
+                Toast
+                    .makeText(
+                        navController.context,
+                        "No application found to open this file.",
+                        Toast.LENGTH_SHORT
+                    )
+                    .show()
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
 
+                Log.e("vishnu", "$listFile")
+
+                Toast
+                    .makeText(
+                        navController.context,
+                        "Something went wrong...",
+                        Toast.LENGTH_SHORT
+                    )
+                    .show()
+            }
         }
     }
 
@@ -244,10 +283,13 @@ fun ItemCard(
 
         Box(
             Modifier
+                .fillMaxSize()
                 .clip(shape = RoundedCornerShape(8.dp))
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onLongPress = {
+                            Log.e("vishnu", "internal() called")
+
                             onLongClick()
                         },
                         onTap = {
