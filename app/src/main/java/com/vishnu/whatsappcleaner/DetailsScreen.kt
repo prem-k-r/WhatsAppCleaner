@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -18,6 +20,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +44,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 
@@ -57,6 +63,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     var sentList = remember { mutableStateListOf<ListFile>() }
 
     var isInProgress by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(isInProgress) {
         viewModel.getFileList(listDirectory.path).observeForever {
@@ -86,32 +93,26 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             )
 
             Banner(Modifier.padding(16.dp), listDirectory.size) {
-                viewModel.delete(
-                    fileList.filter { it.isSelected }
-                ).observeForever {
-                    isInProgress = it
-                }
+                showDialog = true
             }
 
             val pagerState = rememberPagerState(pageCount = {
                 if (listDirectory.hasSent) 2 else 1
             })
 
-            if (isInProgress)
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(8.dp),
-                )
+            if (isInProgress) LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(8.dp),
+            )
 
             HorizontalPager(
                 modifier = Modifier.weight(1f), state = pagerState
             ) { page ->
 
-                var list =
-                    if (page == 0) fileList
-                    else sentList
+                var list = if (page == 0) fileList
+                else sentList
 
                 if (list.isNotEmpty()) {
                     LazyVerticalGrid(
@@ -181,6 +182,98 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
             }
 
+        }
+    }
+
+    if (showDialog) ConfirmationDialog(
+        onDismissRequest = {
+            showDialog = false
+        },
+        onConfirmation = {
+            viewModel.delete(fileList.filter { it.isSelected }).observeForever {
+                isInProgress = it
+            }
+            showDialog = false
+        },
+        fileList.filter { it.isSelected }, // TODO:
+        navController
+    )
+}
+
+@Composable
+fun ConfirmationDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    list: List<ListFile>,
+    navController: NavHostController
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = true),
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .align(Alignment.Start),
+                    text = "Confirm Cleanup",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                        .align(Alignment.Start),
+                    text = "The following files will be deleted.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+
+                LazyVerticalGrid(
+                    modifier = Modifier.weight(1f),
+                    columns = GridCells.Fixed(3),
+                ) {
+                    items(list) {
+                        ItemCard(it, navController, selectionEnabled = false) {}
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Spacer(Modifier.weight(1f))
+
+                    TextButton(
+                        modifier = Modifier,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+                        onClick = onConfirmation,
+                        content = {
+                            Text(
+                                text = "Confirm", style = MaterialTheme.typography.titleMedium,
+                            )
+                        },
+                    )
+                }
+            }
         }
     }
 }

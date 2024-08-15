@@ -3,7 +3,6 @@ package com.vishnu.whatsappcleaner
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -216,13 +215,16 @@ fun SingleCard(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemCard(
-    listFile: ListFile, navController: NavHostController, clickListener: () -> Unit
+    listFile: ListFile,
+    navController: NavHostController,
+    selectionEnabled: Boolean = true,
+    clickListener: () -> Unit,
 ) {
     // only for keeping track of the UI
-    var selected by remember { mutableStateOf(listFile.isSelected) }
+    var selected by remember { mutableStateOf(selectionEnabled && listFile.isSelected) }
 
     var modifier =
         if (listFile.filePath.toString().contains(Constants._LOADING))
@@ -279,7 +281,8 @@ fun ItemCard(
                                     .show()
                             }
                         }, onTap = {
-                            selected = !selected
+                            if (selectionEnabled)
+                                selected = !selected
 
                             if (listFile.filePath
                                     .toString()
