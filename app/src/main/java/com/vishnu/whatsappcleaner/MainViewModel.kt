@@ -98,15 +98,13 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     fun delete(fileList: List<ListFile>): MutableLiveData<Boolean> {
-        Log.i("vishnu", "delete() called with: fileList = $fileList")
+        Log.i("vishnu", "delete() called with: fileList = ${fileList.toList()}")
 
         val mutableLiveData = MutableLiveData<Boolean>(true)
 
         viewModelScope.launch(Dispatchers.IO) {
-            fileList.forEach {
-                if (it.isSelected) {
-                    it.delete()
-                }
+            fileList.toList().forEach { file ->
+                file.delete()
             }
             mutableLiveData.postValue(false)
         }

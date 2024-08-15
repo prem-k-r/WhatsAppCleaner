@@ -98,7 +98,7 @@ class FileRepository {
         }
 
         private fun getSize(path: String): Long {
-            Log.i("vishnu", "getSize() called with: path = $path")
+//            Log.i("vishnu", "getSize() called with: path = $path")
             return File(path).walkTopDown().map { it.length() }.sum()
         }
 
