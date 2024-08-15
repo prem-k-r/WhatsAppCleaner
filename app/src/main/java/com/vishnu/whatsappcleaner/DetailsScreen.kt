@@ -1,5 +1,6 @@
 package com.vishnu.whatsappcleaner
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -36,6 +37,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -47,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -61,6 +65,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     var fileList = remember { mutableStateListOf<ListFile>() }
     var sentList = remember { mutableStateListOf<ListFile>() }
+    var selectedItems = remember { mutableStateListOf<ListFile>() }
 
     var isInProgress by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -100,6 +105,14 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 if (listDirectory.hasSent) 2 else 1
             })
 
+            LaunchedEffect(pagerState) {
+                snapshotFlow {
+                    pagerState.currentPage
+                }.distinctUntilChanged().collect { _ ->
+                    selectedItems.clear()
+                }
+            }
+
             if (isInProgress) LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,18 +123,25 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             HorizontalPager(
                 modifier = Modifier.weight(1f), state = pagerState
             ) { page ->
+                var currentList: SnapshotStateList<ListFile>
 
-                var list = if (page == 0) fileList
-                else sentList
+                if (pagerState.currentPage == 0) {
+                    currentList = fileList
+                } else {
+                    currentList = sentList
+                }
 
-                if (list.isNotEmpty()) {
+                if (currentList.isNotEmpty()) {
                     LazyVerticalGrid(
                         modifier = Modifier.fillMaxSize(),
                         columns = GridCells.Fixed(3),
                     ) {
-                        items(list) {
+                        items(currentList) {
                             ItemCard(it, navController) {
-                                it.isSelected = !it.isSelected
+                                if (selectedItems.contains(it))
+                                    selectedItems.remove(it)
+                                else
+                                    selectedItems.add(it)
                             }
                         }
                     }
@@ -185,19 +205,24 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
         }
     }
 
-    if (showDialog) ConfirmationDialog(
-        onDismissRequest = {
-            showDialog = false
-        },
-        onConfirmation = {
-            viewModel.delete(fileList.filter { it.isSelected }).observeForever {
-                isInProgress = it
-            }
-            showDialog = false
-        },
-        fileList.filter { it.isSelected }, // TODO:
-        navController
-    )
+    if (showDialog) {
+        Log.e("vishnu", "dialog: ${selectedItems.size}")
+
+        ConfirmationDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            onConfirmation = {
+                viewModel.delete(selectedItems).observeForever {
+                    isInProgress = it
+                }
+                showDialog = false
+                selectedItems.clear()
+            },
+            selectedItems,
+            navController
+        )
+    }
 }
 
 @Composable

@@ -223,8 +223,10 @@ fun ItemCard(
     selectionEnabled: Boolean = true,
     clickListener: () -> Unit,
 ) {
+    key(listFile) {
+
     // only for keeping track of the UI
-    var selected by remember { mutableStateOf(selectionEnabled && listFile.isSelected) }
+        var selected by remember { mutableStateOf(false) }
 
     var modifier =
         if (listFile.filePath.toString().contains(Constants._LOADING))
@@ -232,7 +234,6 @@ fun ItemCard(
         else
             Modifier
 
-    key(listFile) {
         Card(
             modifier = modifier
                 .fillMaxWidth()
