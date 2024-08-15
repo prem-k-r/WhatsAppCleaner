@@ -1,6 +1,6 @@
 package com.vishnu.whatsappcleaner
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -98,7 +98,15 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             )
 
             Banner(Modifier.padding(16.dp), listDirectory.size) {
-                showDialog = true
+                if (selectedItems.isNotEmpty())
+                    showDialog = true
+                else
+                    Toast.makeText(
+                        navController.context,
+                        "Select files to cleanup!",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
             }
 
             val pagerState = rememberPagerState(pageCount = {
@@ -206,8 +214,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     }
 
     if (showDialog) {
-        Log.e("vishnu", "dialog: ${selectedItems.size}")
-
         ConfirmationDialog(
             onDismissRequest = {
                 showDialog = false
