@@ -71,7 +71,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             fileList.addAll(it)
         }
 
-        if (listDirectory.hasSent) viewModel.getFileList("${listDirectory.path}%2FSent")
+        if (listDirectory.hasSent) viewModel.getFileList("${listDirectory.path}/Sent")
             .observeForever {
                 sentList.clear()
                 sentList.addAll(it)
