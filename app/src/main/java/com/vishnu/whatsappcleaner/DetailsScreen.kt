@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -234,69 +234,78 @@ fun ConfirmationDialog(
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
-        properties = DialogProperties(usePlatformDefaultWidth = true),
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true,
+            decorFitsSystemWindows = true
+        ),
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(16.dp),
+                .padding(vertical = 64.dp, horizontal = 32.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
         ) {
             Column(
                 modifier = Modifier
-                    .wrapContentSize()
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .align(Alignment.Start),
-                    text = "Confirm Cleanup",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .align(Alignment.Start),
-                    text = "The following files will be deleted.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-
-                LazyVerticalGrid(
-                    modifier = Modifier.weight(1f),
-                    columns = GridCells.Fixed(3),
-                ) {
-                    items(list) {
-                        ItemCard(it, navController, selectionEnabled = false) {}
-                    }
-                }
-
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.wrapContentHeight(),
                     horizontalArrangement = Arrangement.Center,
                 ) {
+
+                    Column {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .padding(vertical = 4.dp)
+                                .align(Alignment.Start),
+                            text = "Confirm Cleanup",
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .padding(vertical = 2.dp)
+                                .align(Alignment.Start),
+                            text = "The following files will be deleted.",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
                     Spacer(Modifier.weight(1f))
 
                     TextButton(
-                        modifier = Modifier,
+                        modifier = Modifier.padding(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ),
                         shape = RoundedCornerShape(16.dp),
-                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+                        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
                         onClick = onConfirmation,
                         content = {
                             Text(
                                 text = "Confirm", style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Medium
                             )
                         },
                     )
+                }
+
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .wrapContentHeight(),
+                    columns = GridCells.Fixed(3),
+                ) {
+                    items(list) { ItemCard(it, navController, selectionEnabled = false) {} }
                 }
             }
         }
