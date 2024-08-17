@@ -1,10 +1,10 @@
 package com.vishnu.whatsappcleaner
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,8 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -221,79 +222,39 @@ fun ItemCard(
     listFile: ListFile,
     navController: NavHostController,
     selectionEnabled: Boolean = true,
-    clickListener: () -> Unit,
+    toggleSelection: () -> Unit,
 ) {
     key(listFile) {
 
-    // only for keeping track of the UI
+        // only for keeping track of the UI
         var selected by remember { mutableStateOf(false) }
 
-    var modifier =
-        if (listFile.filePath.toString().contains(Constants._LOADING))
-            Modifier.shimmer()
-        else
-            Modifier
+        var modifier =
+            if (listFile.filePath.toString().contains(Constants._LOADING))
+                Modifier.shimmer()
+            else
+                Modifier
 
         Card(
             modifier = modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .padding(8.dp)
+                .padding(8.dp),
+            onClick = {
+                if (selectionEnabled)
+                    selected = !selected
+
+                if (!listFile.filePath
+                        .toString()
+                        .contains(Constants._LOADING)
+                ) toggleSelection()
+            }
         ) {
             Box(
                 Modifier
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(8.dp))
-                    .pointerInput(Unit) {
-                        detectTapGestures(onLongPress = {
-
-                            if (listFile.filePath
-                                    .toString()
-                                    .contains(Constants._LOADING)
-                            ) return@detectTapGestures
-
-                            try {
-                                startActivity(
-                                    navController.context, Intent(
-                                        Intent.ACTION_VIEW, FileProvider.getUriForFile(
-                                            navController.context,
-                                            navController.context.packageName + ".provider",
-                                            listFile
-                                        )
-                                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null
-                                )
-                            } catch (e: ActivityNotFoundException) {
-                                e.printStackTrace()
-                                Toast
-                                    .makeText(
-                                        navController.context,
-                                        "No application found to open this file.",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    .show()
-                            } catch (e: IllegalArgumentException) {
-                                e.printStackTrace()
-                                Toast
-                                    .makeText(
-                                        navController.context,
-                                        "Something went wrong...",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    .show()
-                            }
-                        }, onTap = {
-                            if (selectionEnabled)
-                                selected = !selected
-
-                            if (listFile.filePath
-                                    .toString()
-                                    .contains(Constants._LOADING)
-                            ) return@detectTapGestures
-
-                            clickListener()
-                        })
-                    }) {
-
+            ) {
                 if (selected) Icon(
                     modifier = Modifier
                         .size(32.dp)
@@ -306,6 +267,32 @@ fun ItemCard(
                     painter = painterResource(id = R.drawable.check_circle),
                     contentDescription = "checkbox",
                 )
+
+                IconButton(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(32.dp)
+                        .align(Alignment.TopEnd)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.Black.copy(alpha = 0.8f))
+                        .padding(8.dp)
+                        .aspectRatio(1f)
+                        .zIndex(4f),
+                    onClick = {
+                        if (!listFile.filePath
+                                .toString()
+                                .contains(Constants._LOADING)
+                        ) openFile(
+                            navController.context,
+                            listFile
+                        )
+                    }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.open_in),
+                        tint = Color.White,
+                        contentDescription = "open in",
+                    )
+                }
 
                 if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
                     model = listFile,
@@ -421,5 +408,27 @@ fun ItemCard(
                 }
             }
         }
+    }
+}
+
+fun openFile(context: Context, listFile: ListFile) {
+    try {
+        startActivity(
+            context, Intent(
+                Intent.ACTION_VIEW, FileProvider.getUriForFile(
+                    context, context.packageName + ".provider", listFile
+                )
+            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null
+        )
+    } catch (e: ActivityNotFoundException) {
+        e.printStackTrace()
+        Toast.makeText(
+            context, "No application found to open this file.", Toast.LENGTH_SHORT
+        ).show()
+    } catch (e: IllegalArgumentException) {
+        e.printStackTrace()
+        Toast.makeText(
+            context, "Something went wrong...", Toast.LENGTH_SHORT
+        ).show()
     }
 }
