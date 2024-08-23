@@ -4,7 +4,10 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +26,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -241,13 +243,13 @@ fun ItemCard(
                 .aspectRatio(1f)
                 .padding(8.dp),
             onClick = {
-                if (selectionEnabled)
-                    selected = !selected
-
                 if (!listFile.filePath
                         .toString()
                         .contains(Constants._LOADING)
-                ) toggleSelection()
+                ) openFile(
+                    navController.context,
+                    listFile
+                )
             }
         ) {
             Box(
@@ -255,43 +257,38 @@ fun ItemCard(
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(8.dp))
             ) {
-                if (selected) Icon(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .align(Alignment.Center)
+                Box(
+                    Modifier
+                        .padding(8.dp)
+                        .size(24.dp)
+                        .align(Alignment.TopStart)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
-                        .padding(8.dp)
-                        .aspectRatio(1f)
-                        .zIndex(4f),
-                    painter = painterResource(id = R.drawable.check_circle),
-                    contentDescription = "checkbox",
-                )
-
-                IconButton(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(32.dp)
-                        .align(Alignment.TopEnd)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Black.copy(alpha = 0.8f))
-                        .padding(8.dp)
-                        .aspectRatio(1f)
-                        .zIndex(4f),
-                    onClick = {
-                        if (!listFile.filePath
-                                .toString()
-                                .contains(Constants._LOADING)
-                        ) openFile(
-                            navController.context,
-                            listFile
+                        .border(
+                            BorderStroke(
+                                2.dp,
+                                if (selected) Color.Unspecified else Color.White,
+                            ), CircleShape
                         )
-                    }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.open_in),
-                        tint = Color.White,
-                        contentDescription = "open in",
-                    )
+                        .aspectRatio(1f)
+                        .zIndex(4f)
+                        .clickable {
+                            if (selectionEnabled)
+                                selected = !selected
+
+                            if (!listFile.filePath
+                                    .toString()
+                                    .contains(Constants._LOADING)
+                            ) toggleSelection()
+                        }
+                ) {
+                    if (selected)
+                        Icon(
+                            modifier = Modifier
+                                .clip(CircleShape),
+                            painter = painterResource(id = R.drawable.check_circle),
+                            tint = MaterialTheme.colorScheme.primaryContainer,
+                            contentDescription = "checkbox",
+                        )
                 }
 
                 if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
