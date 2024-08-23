@@ -144,7 +144,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                         columns = GridCells.Fixed(3),
                     ) {
                         items(currentList) {
-                            ItemCard(it, navController) {
+                            ItemCard(it, navController, isSelected = selectedItems.contains(it)) {
                                 if (selectedItems.contains(it))
                                     selectedItems.remove(it)
                                 else

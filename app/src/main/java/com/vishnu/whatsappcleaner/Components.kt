@@ -223,13 +223,14 @@ fun SingleCard(
 fun ItemCard(
     listFile: ListFile,
     navController: NavHostController,
+    isSelected: Boolean = false,
     selectionEnabled: Boolean = true,
     toggleSelection: () -> Unit,
 ) {
     key(listFile) {
 
         // only for keeping track of the UI
-        var selected by remember { mutableStateOf(false) }
+        var selected by remember { mutableStateOf(isSelected) }
 
         var modifier =
             if (listFile.filePath.toString().contains(Constants._LOADING))
@@ -257,39 +258,39 @@ fun ItemCard(
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(8.dp))
             ) {
-                Box(
-                    Modifier
-                        .padding(8.dp)
-                        .size(24.dp)
-                        .align(Alignment.TopStart)
-                        .clip(CircleShape)
-                        .border(
-                            BorderStroke(
-                                2.dp,
-                                if (selected) Color.Unspecified else Color.White,
-                            ), CircleShape
-                        )
-                        .aspectRatio(1f)
-                        .zIndex(4f)
-                        .clickable {
-                            if (selectionEnabled)
+                if (selectionEnabled)
+                    Box(
+                        Modifier
+                            .padding(8.dp)
+                            .size(24.dp)
+                            .align(Alignment.TopStart)
+                            .clip(CircleShape)
+                            .border(
+                                BorderStroke(
+                                    2.dp,
+                                    if (selected) Color.Unspecified else Color.White,
+                                ), CircleShape
+                            )
+                            .aspectRatio(1f)
+                            .zIndex(4f)
+                            .clickable {
                                 selected = !selected
 
-                            if (!listFile.filePath
-                                    .toString()
-                                    .contains(Constants._LOADING)
-                            ) toggleSelection()
-                        }
-                ) {
-                    if (selected)
-                        Icon(
-                            modifier = Modifier
-                                .clip(CircleShape),
-                            painter = painterResource(id = R.drawable.check_circle),
-                            tint = MaterialTheme.colorScheme.primaryContainer,
-                            contentDescription = "checkbox",
-                        )
-                }
+                                if (!listFile.filePath
+                                        .toString()
+                                        .contains(Constants._LOADING)
+                                ) toggleSelection()
+                            }
+                    ) {
+                        if (selected)
+                            Icon(
+                                modifier = Modifier
+                                    .clip(CircleShape),
+                                painter = painterResource(id = R.drawable.check_circle),
+                                tint = MaterialTheme.colorScheme.primaryContainer,
+                                contentDescription = "checkbox",
+                            )
+                    }
 
                 if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
                     model = listFile,
