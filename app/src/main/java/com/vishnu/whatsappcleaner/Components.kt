@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,13 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -73,8 +70,9 @@ fun Title(modifier: Modifier, text: String) {
     )
 }
 
+// https://stackoverflow.com/a/70586885/9652621
 @Composable
-fun Banner(modifier: Modifier, text: String, handleCleanup: () -> Unit) {
+fun Banner(modifier: Modifier, text: String) {
 
     val bgColor = MaterialTheme.colorScheme.primaryContainer
     val textColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -112,24 +110,6 @@ fun Banner(modifier: Modifier, text: String, handleCleanup: () -> Unit) {
                 color = textColor,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-            )
-        }
-
-        TextButton(modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-            colors = ButtonDefaults.outlinedButtonColors(containerColor = bgColor),
-            shape = RoundedCornerShape(64.dp),
-            contentPadding = PaddingValues(12.dp),
-            onClick = {
-                handleCleanup()
-            }) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = textColor)) {
-                        append("Cleanup")
-                    }
-                }, fontWeight = FontWeight.Medium, style = MaterialTheme.typography.headlineMedium
             )
         }
     }
@@ -218,6 +198,7 @@ fun SingleCard(
     }
 }
 
+// todo: long press to toggle selection
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemCard(
@@ -244,7 +225,7 @@ fun ItemCard(
                 .aspectRatio(1f)
                 .padding(8.dp),
             onClick = {
-                if (!listFile.filePath
+                if (selectionEnabled && !listFile.filePath
                         .toString()
                         .contains(Constants._LOADING)
                 ) openFile(

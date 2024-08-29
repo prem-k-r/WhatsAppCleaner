@@ -97,21 +97,59 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     .align(Alignment.Start), listDirectory.name
             )
 
-            Banner(Modifier.padding(16.dp), listDirectory.size) {
-                if (selectedItems.isNotEmpty())
-                    showDialog = true
-                else
-                    Toast.makeText(
-                        navController.context,
-                        "Select files to cleanup!",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-            }
+            Banner(Modifier.padding(16.dp), listDirectory.size)
 
             val pagerState = rememberPagerState(pageCount = {
                 if (listDirectory.hasSent) 2 else 1
             })
+
+            if (listDirectory.hasSent) Row(
+                modifier = Modifier.padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+
+                val coroutineScope = rememberCoroutineScope()
+                val arr = arrayOf("Received", "Sent")
+
+                for (s in arr) {
+
+                    TextButton(modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(4.dp, 8.dp, 4.dp, 0.dp)
+                        .border(
+                            BorderStroke(
+                                2.dp,
+                                if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
+                                else MaterialTheme.colorScheme.background,
+                            ),
+                            RoundedCornerShape(64.dp),
+                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (arr[pagerState.settledPage] == s) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.background
+                        ),
+                        shape = RoundedCornerShape(64.dp),
+                        contentPadding = PaddingValues(vertical = 12.dp),
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.scrollToPage(
+                                    arr.indexOf(s)
+                                )
+                            }
+                        }) {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                                    append(s)
+                                }
+                            },
+                            style = MaterialTheme.typography.headlineSmall,
+                        )
+                    }
+
+                }
+            }
 
             LaunchedEffect(pagerState) {
                 snapshotFlow {
@@ -181,54 +219,33 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 }
             }
 
-            if (listDirectory.hasSent) Row(
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                val coroutineScope = rememberCoroutineScope()
-                val arr = arrayOf("Received", "Sent")
-
-                for (s in arr) {
-
-                    TextButton(modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(4.dp, 8.dp, 4.dp, 0.dp)
-                        .border(
-                            BorderStroke(
-                                2.dp,
-                                if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
-                                else MaterialTheme.colorScheme.background,
-                            ),
-                            RoundedCornerShape(64.dp),
-                        ),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (arr[pagerState.settledPage] == s) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.background
-                        ),
-                        shape = RoundedCornerShape(64.dp),
-                        contentPadding = PaddingValues(4.dp),
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.scrollToPage(
-                                    arr.indexOf(s)
-                                )
-                            }
-                        }) {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
-                                    append(s)
-                                }
-                            },
-                            style = MaterialTheme.typography.titleLarge,
+            TextButton(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                shape = RoundedCornerShape(64.dp),
+                contentPadding = PaddingValues(12.dp),
+                onClick = {
+                    if (selectedItems.isNotEmpty())
+                        showDialog = true
+                    else
+                        Toast.makeText(
+                            navController.context,
+                            "Select files to cleanup!",
+                            Toast.LENGTH_SHORT
                         )
-                    }
-
-                }
-
+                            .show()
+                }) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                            append("Cleanup")
+                        }
+                    },
+                    fontWeight = FontWeight.Medium,
+                    style = MaterialTheme.typography.headlineMedium
+                )
             }
-
         }
     }
 

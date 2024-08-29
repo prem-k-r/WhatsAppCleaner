@@ -1,6 +1,5 @@
 package com.vishnu.whatsappcleaner
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -51,9 +50,7 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                 text = stringResource(R.string.app_name),
             )
 
-            Banner(Modifier.padding(16.dp), totalSize.value) {
-                Toast.makeText(navController.context, "Coming soon...!", Toast.LENGTH_SHORT).show()
-            }
+            Banner(Modifier.padding(16.dp), totalSize.value)
 
             Text(
                 modifier = Modifier
