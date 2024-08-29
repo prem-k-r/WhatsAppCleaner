@@ -46,6 +46,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
@@ -152,13 +153,32 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                             }
                         }
                     }
-                } else Icon(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(32.dp),
-                    painter = painterResource(id = R.drawable.empty),
-                    contentDescription = "empty",
-                )
+                } else {
+
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxSize(0.4f)
+                                .padding(8.dp),
+                            painter = painterResource(id = R.drawable.clean),
+                            contentDescription = "empty",
+                            tint = MaterialTheme.colorScheme.secondaryContainer
+                        )
+
+                        Text(
+                            modifier = Modifier,
+                            text = "Nothing to clean",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Medium,
+                        )
+
+                    }
+
+                }
             }
 
             if (listDirectory.hasSent) Row(
@@ -307,6 +327,7 @@ fun ConfirmationDialog(
                     )
                 }
 
+                // todo: no preview & replace it with count + red colored CTA
                 LazyVerticalGrid(
                     modifier = Modifier
                         .wrapContentHeight(),
