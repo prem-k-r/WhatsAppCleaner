@@ -219,7 +219,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             },
             onConfirmation = {
 
-                viewModel.delete(selectedItems)
+                viewModel.delete(selectedItems.toList())
                     .observeForever {
                         isInProgress = it
                     }

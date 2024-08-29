@@ -97,6 +97,17 @@ class FileRepository {
             return loadingList
         }
 
+        @JvmStatic
+        public fun deleteFiles(fileList: List<ListFile>): Boolean {
+            Log.i("vishnu", "FileRepository#deleteFiles: $fileList")
+
+            fileList.forEach { file ->
+                file.delete()
+            }
+
+            return false
+        }
+
         private fun getSize(path: String): Long {
 //            Log.i("vishnu", "getSize() called with: path = $path")
             return File(path).walkTopDown().map { it.length() }.sum()
