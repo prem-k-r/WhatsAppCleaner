@@ -224,7 +224,9 @@ fun ItemCard(
             modifier = modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .padding(8.dp)
+                .padding(
+                    if (selected) 16.dp else 8.dp
+                ),
         ) {
             Box(
                 Modifier
