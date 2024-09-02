@@ -8,6 +8,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -198,7 +200,6 @@ fun SingleCard(
     }
 }
 
-// todo: long press to toggle selection
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemCard(
@@ -223,21 +224,37 @@ fun ItemCard(
             modifier = modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .padding(8.dp),
-            onClick = {
-                if (selectionEnabled && !listFile.filePath
-                        .toString()
-                        .contains(Constants._LOADING)
-                ) openFile(
-                    navController.context,
-                    listFile
-                )
-            }
+                .padding(8.dp)
         ) {
             Box(
                 Modifier
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(8.dp))
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = {
+
+                                if (!selectionEnabled)
+                                    return@detectTapGestures
+
+                                selected = !selected
+
+                                if (!listFile.filePath
+                                        .toString()
+                                        .contains(Constants._LOADING)
+                                ) toggleSelection()
+                            },
+                            onTap = {
+                                if (selectionEnabled && !listFile.filePath
+                                        .toString()
+                                        .contains(Constants._LOADING)
+                                ) openFile(
+                                    navController.context,
+                                    listFile
+                                )
+                            }
+                        )
+                    }
             ) {
                 if (selectionEnabled)
                     Box(
