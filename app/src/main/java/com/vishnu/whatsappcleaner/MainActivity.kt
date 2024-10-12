@@ -98,7 +98,15 @@ class MainActivity : ComponentActivity() {
             WhatsAppCleanerTheme {
 
                 storagePermissionGranted =
-                    remember { mutableStateOf(Build.VERSION.SDK_INT >= VERSION_CODES.R && Environment.isExternalStorageManager()) }
+                    remember {
+                        mutableStateOf(
+                            (Build.VERSION.SDK_INT >= VERSION_CODES.R && Environment.isExternalStorageManager()) ||
+                                    ActivityCompat.checkSelfPermission(
+                                        this@MainActivity,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    ) == PackageManager.PERMISSION_GRANTED
+                        )
+                    }
 
                 var startDestination =
                     if (Build.VERSION.SDK_INT >= VERSION_CODES.R &&
