@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun PermissionScreen(
     navController: NavHostController,
+    permissionsGranted: Pair<Boolean, Boolean>,
     requestPermission: () -> Unit,
     chooseDirectory: () -> Unit
 ) {
@@ -52,6 +53,7 @@ fun PermissionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
+                enabled = !permissionsGranted.first,
                 content = { Text("Grant all files permision") },
                 onClick = {
                     requestPermission()
@@ -62,6 +64,7 @@ fun PermissionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
+                enabled = permissionsGranted.first && !permissionsGranted.second,
                 content = { Text("Choose WhatsApp directory") },
                 onClick = {
                     chooseDirectory()
