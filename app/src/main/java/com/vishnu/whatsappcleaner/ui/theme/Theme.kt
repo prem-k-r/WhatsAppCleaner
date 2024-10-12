@@ -1,6 +1,8 @@
 package com.vishnu.whatsappcleaner.ui.theme
 
+import android.graphics.Typeface
 import android.os.Build
+import android.os.Build.VERSION_CODES
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -90,7 +92,10 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
-private val fontFamily = FontFamily(Font(R.font.geist))
+private val fontFamily = if (Build.VERSION.SDK_INT > VERSION_CODES.N)
+    FontFamily(Font(R.font.geist))
+else
+    FontFamily(Typeface.DEFAULT)
 
 @Composable
 fun WhatsAppCleanerTheme(
@@ -100,7 +105,7 @@ fun WhatsAppCleanerTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor && Build.VERSION.SDK_INT >= VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
