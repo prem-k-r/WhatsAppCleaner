@@ -3,6 +3,22 @@
 <!--TODO: sorting by size, date modified, name-->
 <!--TODO: view size, duration & etc-->
 
+<!--
+    API     Android Version     Testing Status (emulator/real device)             Note
+    24      7.0                                 E                           normal permission
+    25      7.1                                 *                           normal permission
+    26      8.0                                 *                           normal permission
+    27      8.1                                 *                           normal permission
+    28      9                                   *                           normal permission
+    29      10                                  *                           normal permission
+    30      11                                  *                           manage permission
+    31      12                                  *                           manage storage
+    32      12                                  *                           manage storage
+    33      13                                  *                           manage storage
+    34      14                                  R                           manage storage
+    35      15                                  *                           manage storage
+-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
