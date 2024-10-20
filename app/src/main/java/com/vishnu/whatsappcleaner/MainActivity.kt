@@ -17,6 +17,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,8 +50,6 @@ class MainActivity : ComponentActivity() {
 
                     val absolutePath =
                         Environment.getExternalStorageDirectory().absolutePath + File.separator + relativePath
-
-                    Log.e("vishnu", "onCreate: $absolutePath, $relativePath")
 
                     viewModel.listDirectories(absolutePath).observeForever {
 
@@ -97,103 +97,111 @@ class MainActivity : ComponentActivity() {
         setContent {
             WhatsAppCleanerTheme {
 
-                storagePermissionGranted =
-                    remember {
-                        mutableStateOf(
-                            (Build.VERSION.SDK_INT >= VERSION_CODES.R && Environment.isExternalStorageManager()) ||
-                                    ActivityCompat.checkSelfPermission(
-                                        this@MainActivity,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                    ) == PackageManager.PERMISSION_GRANTED
-                        )
-                    }
+                Scaffold { paddingValues ->
 
-                var startDestination =
-                    if (Build.VERSION.SDK_INT >= VERSION_CODES.R &&
-                        Environment.isExternalStorageManager() &&
-                        contentResolver.persistedUriPermissions.isNotEmpty()
-                    ) Constants.SCREEN_HOME
-                    else if (ActivityCompat.checkSelfPermission(
-                            this@MainActivity,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ) == PackageManager.PERMISSION_GRANTED
-                        && contentResolver.persistedUriPermissions.isNotEmpty()
-                    ) Constants.SCREEN_HOME
-                    else {
-                        Toast.makeText(
-                            this, "Please grant all permissions...", Toast.LENGTH_SHORT
-                        ).show()
-                        Constants.SCREEN_PERMISSION
-                    }
-
-                val navController = rememberNavController()
-
-                NavHost(
-                    modifier = Modifier.fillMaxSize(),
-                    navController = navController,
-                    startDestination = startDestination
-                ) {
-                    composable(route = Constants.SCREEN_PERMISSION) {
-                        PermissionScreen(
-                            navController = navController,
-                            permissionsGranted = Pair(
-                                storagePermissionGranted.value,
-                                contentResolver.persistedUriPermissions.isNotEmpty()
-                            ),
-                            requestPermission = {
-                                if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
-                                    storagePermissionResultLauncher.launch(
-                                        Intent(
-                                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                            Uri.parse("package:" + packageName)
-                                        )
-                                    )
-                                } else {
-
-                                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    storagePermissionGranted =
+                        remember {
+                            mutableStateOf(
+                                (Build.VERSION.SDK_INT >= VERSION_CODES.R && Environment.isExternalStorageManager()) ||
+                                        ActivityCompat.checkSelfPermission(
                                             this@MainActivity,
                                             Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED
+                            )
+                        }
+
+                    var startDestination =
+                        if (Build.VERSION.SDK_INT >= VERSION_CODES.R &&
+                            Environment.isExternalStorageManager() &&
+                            contentResolver.persistedUriPermissions.isNotEmpty()
+                        ) Constants.SCREEN_HOME
+                        else if (ActivityCompat.checkSelfPermission(
+                                this@MainActivity,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ) == PackageManager.PERMISSION_GRANTED
+                            && contentResolver.persistedUriPermissions.isNotEmpty()
+                        ) Constants.SCREEN_HOME
+                        else {
+                            Toast.makeText(
+                                this, "Please grant all permissions...", Toast.LENGTH_SHORT
+                            ).show()
+                            Constants.SCREEN_PERMISSION
+                        }
+
+                    val navController = rememberNavController()
+
+                    Log.e("vishnu", "onCreate: $paddingValues")
+
+                    NavHost(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        navController = navController,
+                        startDestination = startDestination
+                    ) {
+                        composable(route = Constants.SCREEN_PERMISSION) {
+                            PermissionScreen(
+                                navController = navController,
+                                permissionsGranted = Pair(
+                                    storagePermissionGranted.value,
+                                    contentResolver.persistedUriPermissions.isNotEmpty()
+                                ),
+                                requestPermission = {
+                                    if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
+                                        storagePermissionResultLauncher.launch(
+                                            Intent(
+                                                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                                Uri.parse("package:" + packageName)
+                                            )
                                         )
-                                    ) {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Storage permission required for the app to work",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                    } else {
+
+                                        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                                                this@MainActivity,
+                                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                            )
+                                        ) {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Storage permission required for the app to work",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+
+                                        requestPermissions(
+                                            arrayOf(
+                                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE
+                                            ),
+                                            Constants.REQUEST_PERMISSIONS_CODE_WRITE_STORAGE
+                                        )
+
                                     }
+                                },
+                                chooseDirectory = {
+                                    resultLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                                        if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
+                                            DocumentsContract.EXTRA_INITIAL_URI,
+                                            Uri.parse(Constants.WHATSAPP_HOME_URI)
+                                        )
+                                    })
+                                },
+                            )
+                        }
 
-                                    requestPermissions(
-                                        arrayOf(
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE
-                                        ),
-                                        Constants.REQUEST_PERMISSIONS_CODE_WRITE_STORAGE
-                                    )
+                        composable(route = Constants.SCREEN_HOME) {
+                            HomeScreen(navController, viewModel)
+                        }
 
-                                }
-                            },
-                            chooseDirectory = {
-                                resultLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                                    if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
-                                        DocumentsContract.EXTRA_INITIAL_URI,
-                                        Uri.parse(Constants.WHATSAPP_HOME_URI)
-                                    )
-                                })
-                            },
-                        )
+                        composable(route = Constants.SCREEN_DETAILS) {
+                            DetailsScreen(navController, viewModel)
+                        }
+
                     }
-
-                    composable(route = Constants.SCREEN_HOME) {
-                        HomeScreen(navController, viewModel)
-                    }
-
-                    composable(route = Constants.SCREEN_DETAILS) {
-                        DetailsScreen(navController, viewModel)
-                    }
-
                 }
             }
         }
+
     }
 
     public override fun onRequestPermissionsResult(

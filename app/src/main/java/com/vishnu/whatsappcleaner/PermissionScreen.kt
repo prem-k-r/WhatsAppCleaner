@@ -29,7 +29,7 @@ fun PermissionScreen(
         color = MaterialTheme.colorScheme.background
     ) {
 
-        Column(Modifier.padding(vertical = 32.dp)) {
+        Column(Modifier.padding(horizontal = 8.dp)) {
 
             Text(
                 modifier = Modifier.padding(16.dp, 32.dp, 16.dp, 0.dp),
