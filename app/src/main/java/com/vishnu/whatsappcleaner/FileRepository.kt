@@ -36,7 +36,7 @@ class FileRepository {
 
         @JvmStatic
         public suspend fun getFileList(context: Context, path: String): ArrayList<ListFile> {
-            Log.e("vishnu", "FileRepository#getFileList: $path")
+            Log.i("vishnu", "FileRepository#getFileList: $path")
 
             val list = ArrayList<ListFile>()
 
@@ -68,7 +68,7 @@ class FileRepository {
 
         @JvmStatic
         public suspend fun getDirectoryList(path: String): ArrayList<String> {
-            Log.e("vishnu", "FileRepository#getDirectoryList: $path")
+            Log.i("vishnu", "FileRepository#getDirectoryList: $path")
 
             val list = ArrayList<String>()
 

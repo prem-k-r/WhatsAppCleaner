@@ -163,7 +163,10 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     requestPermissions(
-                                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                                        arrayOf(
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ),
                                         Constants.REQUEST_PERMISSIONS_CODE_WRITE_STORAGE
                                     )
 
@@ -210,7 +213,10 @@ class MainActivity : ComponentActivity() {
                         storagePermissionGranted.value = true
                     } else {
                         requestPermissions(
-                            arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                            arrayOf<String>(
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            ),
                             Constants.REQUEST_PERMISSIONS_CODE_WRITE_STORAGE
                         )
                     }
