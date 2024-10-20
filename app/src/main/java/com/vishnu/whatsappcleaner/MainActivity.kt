@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -129,8 +128,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                     val navController = rememberNavController()
-
-                    Log.e("vishnu", "onCreate: $paddingValues")
 
                     NavHost(
                         modifier = Modifier

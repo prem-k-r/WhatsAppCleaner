@@ -65,6 +65,15 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                     SingleCard(it, navController)
                 }
             }
+
+            if (BuildConfig.DEBUG)
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(4.dp),
+                    text = "Debug Build ${BuildConfig.VERSION_NAME}",
+                    style = MaterialTheme.typography.labelSmall,
+                )
         }
     }
 }
