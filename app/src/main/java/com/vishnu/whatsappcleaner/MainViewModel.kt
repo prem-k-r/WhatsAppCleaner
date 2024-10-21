@@ -37,7 +37,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData;
     }
 
-    fun getDirectoryList(): MutableLiveData<Pair<String, List<ListDirectory>>> {
+    fun getDirectoryList(forceReload: Boolean = false): MutableLiveData<Pair<String, List<ListDirectory>>> {
         Log.i("vishnu", "getDirectoryList() called")
 
         val mutableLiveData = MutableLiveData<Pair<String, List<ListDirectory>>>(
@@ -48,7 +48,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
         viewModelScope.launch(Dispatchers.Default) {
 
-            if (totalSize == null) storeData.get(Constants.WHATSAPP_HOME_URI)?.let { homeUri ->
+            if (totalSize == null || forceReload) storeData.get(Constants.WHATSAPP_HOME_URI)
+                ?.let { homeUri ->
                 val pair = FileRepository.getDirectoryList(
                     application, homeUri
                 )

@@ -10,9 +10,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,14 +26,28 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     var totalSize = remember { mutableStateOf("0 B") }
 
+    var forceReload by remember { mutableStateOf(false) }
     var directoryList = remember { mutableStateListOf<ListDirectory>() }
 
-    LaunchedEffect(key1 = null) {
-        viewModel.getDirectoryList().observeForever {
+    forceReload = navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(
+        Constants.FORCE_RELOAD_FILE_LIST
+    ) ?: false
+
+    LaunchedEffect(key1 = forceReload) {
+
+        if (forceReload) {
+            totalSize.value = "0 B"
+            directoryList.clear()
+            directoryList.addAll(ListDirectory.getDirectoryList(Constants._LOADING))
+        }
+
+        viewModel.getDirectoryList(forceReload).observeForever {
             totalSize.value = it.first
 
             directoryList.clear()
             directoryList.addAll(it.second)
+
+            forceReload = false
         }
     }
 

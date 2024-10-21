@@ -259,6 +259,9 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 viewModel.delete(selectedItems.toList())
                     .observeForever {
                         isInProgress = it
+                        navController.previousBackStackEntry?.savedStateHandle?.apply {
+                            set(Constants.FORCE_RELOAD_FILE_LIST, true)
+                        }
                     }
                 showDialog = false
                 selectedItems.clear()
