@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -307,7 +306,11 @@ fun ConfirmationDialog(
                     horizontalArrangement = Arrangement.Center,
                 ) {
 
-                    Column {
+                    Column(
+                        Modifier
+                            .weight(0.6f)
+                            .fillMaxWidth()
+                    ) {
                         Text(
                             modifier = Modifier
                                 .wrapContentHeight()
@@ -327,10 +330,11 @@ fun ConfirmationDialog(
                         )
                     }
 
-                    Spacer(Modifier.weight(1f))
-
                     TextButton(
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier
+                            .weight(0.4f)
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
