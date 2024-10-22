@@ -48,7 +48,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.WhatsAppCleaner">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.WhatsAppCleaner"
+            tools:ignore="LockedOrientationActivity">
+            <!-- TODO: support orientations -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
