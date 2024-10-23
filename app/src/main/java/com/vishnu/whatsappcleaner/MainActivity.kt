@@ -230,6 +230,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.R && ::storagePermissionGranted.isInitialized)
+            storagePermissionGranted.value = Environment.isExternalStorageManager()
+    }
+
     private fun restartActivity() {
         // terrible hack!
         val intent = intent;
