@@ -1,5 +1,6 @@
 package com.vishnu.whatsappcleaner
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -55,6 +57,10 @@ fun PermissionScreen(
                     .padding(16.dp),
                 enabled = !permissionsGranted.first,
                 content = { Text("Grant all files permision") },
+                border = BorderStroke(
+                    1.dp,
+                    if (permissionsGranted.first) Color.Green else Color.Red
+                ),
                 onClick = {
                     requestPermission()
                 }
@@ -66,6 +72,10 @@ fun PermissionScreen(
                     .padding(16.dp),
                 enabled = permissionsGranted.first && !permissionsGranted.second,
                 content = { Text("Choose WhatsApp directory") },
+                border = BorderStroke(
+                    1.dp,
+                    if (permissionsGranted.second) Color.Green else Color.Red
+                ),
                 onClick = {
                     chooseDirectory()
                 },
