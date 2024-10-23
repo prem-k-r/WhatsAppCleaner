@@ -1,6 +1,5 @@
 package com.vishnu.whatsappcleaner
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -73,19 +72,19 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     var sentList = remember { mutableStateListOf<ListFile>() }
     var selectedItems = remember { mutableStateListOf<ListFile>() }
 
-    var sortBy = remember { mutableStateOf("date") }
+    var sortBy = remember { mutableStateOf("Date Desc") }
 
     var isInProgress by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isInProgress) {
-        viewModel.getFileList(listDirectory.path).observeForever {
+    LaunchedEffect(isInProgress, sortBy.value) {
+        viewModel.getFileList(listDirectory.path, sortBy.value).observeForever {
             fileList.clear()
             fileList.addAll(it)
         }
 
-        if (listDirectory.hasSent) viewModel.getFileList("${listDirectory.path}/Sent")
+        if (listDirectory.hasSent) viewModel.getFileList("${listDirectory.path}/Sent", sortBy.value)
             .observeForever {
                 sentList.clear()
                 sentList.addAll(it)
@@ -309,8 +308,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
         )
     }
 
-    Log.e("vishnu", "DetailsScreen: ${sortBy.value}")
-
     if (showConfirmationDialog) {
         ConfirmationDialog(
             onDismissRequest = {
@@ -371,7 +368,14 @@ fun SortDialog(
                     style = MaterialTheme.typography.headlineLarge,
                 )
 
-                listOf("Name", "Size", "Date").forEach { item ->
+                listOf(
+                    "Date Asc",
+                    "Date Desc",
+                    "Size Asc",
+                    "Size Desc",
+                    "Name Asc",
+                    "Name Desc",
+                ).forEach { item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

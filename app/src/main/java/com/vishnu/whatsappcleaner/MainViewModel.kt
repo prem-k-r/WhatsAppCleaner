@@ -50,13 +50,13 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
             if (totalSize == null || forceReload) storeData.get(Constants.WHATSAPP_HOME_URI)
                 ?.let { homeUri ->
-                val pair = FileRepository.getDirectoryList(
-                    application, homeUri
-                )
+                    val pair = FileRepository.getDirectoryList(
+                        application, homeUri
+                    )
 
-                totalSize = pair.first
-                directoryList = pair.second
-            }
+                    totalSize = pair.first
+                    directoryList = pair.second
+                }
 
             mutableLiveData.postValue(
                 Pair(
@@ -68,7 +68,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData;
     }
 
-    fun getFileList(path: String): MutableLiveData<ArrayList<ListFile>> {
+    fun getFileList(path: String, sortBy: String): MutableLiveData<ArrayList<ListFile>> {
         Log.i("vishnu", "getFileList: $path")
 
         val mutableLiveData = MutableLiveData<ArrayList<ListFile>>(
@@ -76,9 +76,26 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         )
 
         viewModelScope.launch(Dispatchers.Default) {
-            mutableLiveData.postValue(
-                FileRepository.getFileList(application, path)
-            )
+
+            val fileList = FileRepository.getFileList(application, path);
+
+            fileList.sortBy {
+                if (sortBy.contains("Name"))
+                    it.name
+                else if (sortBy.contains("Size"))
+                    it.length().toString() // FIXME:
+                else
+                    it.lastModified().toString()
+            }
+
+            fileList.forEach {
+                Log.e("vishnu", "getFileList:" + it.length().toString() + " \t")
+            }
+
+            if (sortBy.contains("Desc"))
+                fileList.reverse()
+
+            mutableLiveData.postValue(fileList)
         }
 
         return mutableLiveData;
