@@ -79,18 +79,14 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
             val fileList = FileRepository.getFileList(application, path);
 
-            fileList.sortBy {
+            fileList.sortWith(
                 if (sortBy.contains("Name"))
-                    it.name
+                    compareBy { it.name }
                 else if (sortBy.contains("Size"))
-                    it.length().toString() // FIXME:
+                    compareBy { it.length() }
                 else
-                    it.lastModified().toString()
-            }
-
-            fileList.forEach {
-                Log.e("vishnu", "getFileList:" + it.length().toString() + " \t")
-            }
+                    compareBy { it.lastModified() }
+            )
 
             if (sortBy.contains("Desc"))
                 fileList.reverse()
