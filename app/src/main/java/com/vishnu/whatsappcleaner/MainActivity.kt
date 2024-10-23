@@ -201,6 +201,7 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    @Deprecated("Deprecated callback")
     public override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,

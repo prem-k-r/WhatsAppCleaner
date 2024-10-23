@@ -1,9 +1,11 @@
 package com.vishnu.whatsappcleaner
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,13 +25,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -66,8 +73,11 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     var sentList = remember { mutableStateListOf<ListFile>() }
     var selectedItems = remember { mutableStateListOf<ListFile>() }
 
+    var sortBy = remember { mutableStateOf("date") }
+
     var isInProgress by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) }
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var showSortDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(isInProgress) {
         viewModel.getFileList(listDirectory.path).observeForever {
@@ -150,6 +160,47 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 }
             }
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(4.dp),
+                    onClick = {
+                        showSortDialog = true
+                    }
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(32.dp),
+                        painter = painterResource(id = R.drawable.ic_sort),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "sort",
+                    )
+                }
+
+//                IconButton(
+//                    modifier = Modifier
+//                        .size(32.dp)
+//                        .padding(4.dp),
+//                    onClick = {
+//                        showSortDialog = true
+//                    }
+//                ) {
+//                    Icon(
+//                        modifier = Modifier
+//                            .size(32.dp),
+//                        painter = painterResource(id = R.drawable.ic_select_all),
+//                        tint = MaterialTheme.colorScheme.primary,
+//                        contentDescription = "select all",
+//                    )
+//                }
+            }
+
             LaunchedEffect(pagerState) {
                 snapshotFlow {
                     pagerState.currentPage
@@ -226,7 +277,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 contentPadding = PaddingValues(12.dp),
                 onClick = {
                     if (selectedItems.isNotEmpty())
-                        showDialog = true
+                        showConfirmationDialog = true
                     else
                         Toast.makeText(
                             navController.context,
@@ -248,10 +299,22 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
         }
     }
 
-    if (showDialog) {
+    if (showSortDialog) {
+        SortDialog(
+            navController,
+            onDismissRequest = {
+                showSortDialog = false
+            },
+            sortBy
+        )
+    }
+
+    Log.e("vishnu", "DetailsScreen: ${sortBy.value}")
+
+    if (showConfirmationDialog) {
         ConfirmationDialog(
             onDismissRequest = {
-                showDialog = false
+                showConfirmationDialog = false
             },
             onConfirmation = {
 
@@ -262,12 +325,78 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                             set(Constants.FORCE_RELOAD_FILE_LIST, true)
                         }
                     }
-                showDialog = false
+                showConfirmationDialog = false
                 selectedItems.clear()
             },
             selectedItems,
             navController
         )
+    }
+}
+
+@Composable
+fun SortDialog(
+    navController: NavHostController,
+    onDismissRequest: () -> Unit,
+    sortBy: MutableState<String>
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true,
+            decorFitsSystemWindows = true
+        ),
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(vertical = 64.dp, horizontal = 32.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(16.dp),
+            ) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .padding(8.dp),
+                    text = "Sort Crieteria",
+                    style = MaterialTheme.typography.headlineLarge,
+                )
+
+                listOf("Name", "Size", "Date").forEach { item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                sortBy.value = item
+                                onDismissRequest()
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = sortBy.value == item,
+                            onClick = {
+                                sortBy.value = item
+                                onDismissRequest()
+                            },
+                            enabled = true,
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                        Text(text = item, modifier = Modifier.padding(start = 8.dp))
+                    }
+                }
+            }
+        }
     }
 }
 
