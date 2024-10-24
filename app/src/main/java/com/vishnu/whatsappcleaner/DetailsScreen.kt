@@ -70,6 +70,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     var fileList = remember { mutableStateListOf<ListFile>() }
     var sentList = remember { mutableStateListOf<ListFile>() }
+    var privateList = remember { mutableStateListOf<ListFile>() }
+
     var selectedItems = remember { mutableStateListOf<ListFile>() }
 
     var sortBy = remember { mutableStateOf("Date Desc") }
@@ -88,6 +90,15 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             .observeForever {
                 sentList.clear()
                 sentList.addAll(it)
+            }
+
+        if (listDirectory.hasPrivate) viewModel.getFileList(
+            "${listDirectory.path}/Private",
+            sortBy.value
+        )
+            .observeForever {
+                privateList.clear()
+                privateList.addAll(it)
             }
     }
 
@@ -108,56 +119,66 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             Banner(Modifier.padding(16.dp), listDirectory.size)
 
             val pagerState = rememberPagerState(pageCount = {
-                if (listDirectory.hasSent) 2 else 1
+                if (listDirectory.hasSent)
+                    if (listDirectory.hasPrivate) 3
+                    else 2
+                else 1
             })
 
-            if (listDirectory.hasSent) Row(
-                modifier = Modifier.padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
+            if (listDirectory.hasSent || listDirectory.hasPrivate)
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
 
-                val coroutineScope = rememberCoroutineScope()
-                val arr = arrayOf("Received", "Sent")
+                    val coroutineScope = rememberCoroutineScope()
+                    val arr = arrayListOf("Received")
 
-                for (s in arr) {
+                    if (listDirectory.hasSent)
+                        arr.add("Sent");
 
-                    TextButton(modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(4.dp, 8.dp, 4.dp, 0.dp)
-                        .border(
-                            BorderStroke(
-                                2.dp,
-                                if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
-                                else MaterialTheme.colorScheme.background,
+                    if (listDirectory.hasPrivate)
+                        arr.add("Private")
+
+                    for (s in arr) {
+
+                        TextButton(modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(4.dp, 8.dp, 4.dp, 0.dp)
+                            .border(
+                                BorderStroke(
+                                    2.dp,
+                                    if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
+                                    else MaterialTheme.colorScheme.background,
+                                ),
+                                RoundedCornerShape(64.dp),
                             ),
-                            RoundedCornerShape(64.dp),
-                        ),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (arr[pagerState.settledPage] == s) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.background
-                        ),
-                        shape = RoundedCornerShape(64.dp),
-                        contentPadding = PaddingValues(vertical = 12.dp),
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.scrollToPage(
-                                    arr.indexOf(s)
-                                )
-                            }
-                        }) {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
-                                    append(s)
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (arr[pagerState.settledPage] == s) MaterialTheme.colorScheme.primaryContainer
+                                else MaterialTheme.colorScheme.background
+                            ),
+                            shape = RoundedCornerShape(64.dp),
+                            contentPadding = PaddingValues(vertical = 12.dp),
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.scrollToPage(
+                                        arr.indexOf(s)
+                                    )
                                 }
-                            },
-                            style = MaterialTheme.typography.headlineSmall,
-                        )
-                    }
+                            }) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                                        append(s)
+                                    }
+                                },
+                                style = MaterialTheme.typography.headlineSmall,
+                            )
+                        }
 
+                    }
                 }
-            }
 
             Row(
                 modifier = Modifier
@@ -222,8 +243,10 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
                 if (pagerState.currentPage == 0) {
                     currentList = fileList
-                } else {
+                } else if (pagerState.currentPage == 1) {
                     currentList = sentList
+                } else {
+                    currentList = privateList
                 }
 
                 if (currentList.isNotEmpty()) {

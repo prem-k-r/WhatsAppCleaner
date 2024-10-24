@@ -7,6 +7,7 @@ data class ListDirectory(
     val path: String,
     val icon: Int,
     val hasSent: Boolean = true,
+    val hasPrivate: Boolean = true,
     var size: String = "0 B"
 ) :
     Serializable {
@@ -40,6 +41,7 @@ data class ListDirectory(
                     "Statuses",
                     "$homePath/Media/.Statuses",
                     R.drawable.status,
+                    false,
                     false
                 ),
 
@@ -47,12 +49,14 @@ data class ListDirectory(
                     "Voice Notes",
                     "$homePath/Media/WhatsApp Voice Notes",
                     R.drawable.voice,
+                    false,
                     false
                 ),
                 ListDirectory(
                     "Video Notes",
                     "$homePath/Media/WhatsApp Video Notes",
                     R.drawable.video_notes,
+                    false,
                     false
                 ),
 
@@ -65,18 +69,21 @@ data class ListDirectory(
                     "Wallpapers",
                     "$homePath/Media/WallPaper",
                     R.drawable.wallpaper,
+                    false,
                     false
                 ),
                 ListDirectory(
                     "Stickers",
                     "$homePath/Media/WhatsApp Stickers",
                     R.drawable.sticker,
+                    false,
                     false
                 ),
                 ListDirectory(
                     "Profile Photos",
                     "$homePath/Media/WhatsApp Profile Photos",
                     R.drawable.profile,
+                    false,
                     false
                 ),
             )
