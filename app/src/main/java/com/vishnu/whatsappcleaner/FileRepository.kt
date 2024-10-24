@@ -22,7 +22,15 @@ class FileRepository {
 
             directoryList.forEach { directoryItem ->
 
-                val size = getSize(directoryItem.path)
+                // since this contains expensive operations :)
+                var size = File(directoryItem.path)
+                    .walkBottomUp()
+                    .map {
+                        if (it.name == ".nomedia" || it.name == File(directoryItem.path).name)
+                            0
+                        else
+                            it.length()
+                    }.sum()
 
                 directoryItem.size = formatFileSize(context, size)
 
