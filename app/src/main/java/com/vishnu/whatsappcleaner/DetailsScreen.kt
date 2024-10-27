@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,6 +81,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     var isInProgress by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
+
+    var isAllSelected by remember { mutableStateOf(false) }
 
     LaunchedEffect(isInProgress, sortBy.value) {
         viewModel.getFileList(listDirectory.path, sortBy.value).observeForever {
@@ -148,13 +151,15 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 else 1
             })
 
+            var currentList: SnapshotStateList<ListFile> = fileList
+            val coroutineScope = rememberCoroutineScope()
+
             if (listDirectory.hasSent || listDirectory.hasPrivate)
                 Row(
                     modifier = Modifier.padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
 
-                    val coroutineScope = rememberCoroutineScope()
                     val arr = arrayListOf("Received")
 
                     if (listDirectory.hasSent)
@@ -210,13 +215,18 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     .size(32.dp)
                     .padding(4.dp),
                 onClick = {
+                    isAllSelected = !isAllSelected
 
+                    if (isAllSelected)
+                        selectedItems.addAll(currentList.toList())
+                    else
+                        selectedItems.clear()
                 }
             ) {
                 Icon(
                     modifier = Modifier
                         .size(32.dp),
-                    painter = painterResource(id = R.drawable.check_circle),
+                    painter = painterResource(id = if (isAllSelected) R.drawable.check_circle_filled else R.drawable.check_circle),
                     tint = MaterialTheme.colorScheme.primary,
                     contentDescription = "select all",
                 )
@@ -227,6 +237,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     pagerState.currentPage
                 }.distinctUntilChanged().collect { _ ->
                     selectedItems.clear()
+                    isAllSelected = false
                 }
             }
 
@@ -237,58 +248,63 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     .padding(8.dp),
             )
 
-            HorizontalPager(
-                modifier = Modifier.weight(1f), state = pagerState
-            ) { page ->
-                var currentList: SnapshotStateList<ListFile>
+            key(isAllSelected) {
+                HorizontalPager(
+                    modifier = Modifier.weight(1f), state = pagerState
+                ) { page ->
 
-                if (pagerState.currentPage == 0) {
-                    currentList = fileList
-                } else if (pagerState.currentPage == 1) {
-                    currentList = sentList
-                } else {
-                    currentList = privateList
-                }
+                    if (pagerState.currentPage == 0) {
+                        currentList = fileList
+                    } else if (pagerState.currentPage == 1) {
+                        currentList = sentList
+                    } else {
+                        currentList = privateList
+                    }
 
-                if (currentList.isNotEmpty()) {
-                    LazyVerticalGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Fixed(3),
-                    ) {
-                        items(currentList) {
-                            ItemCard(it, navController, isSelected = selectedItems.contains(it)) {
-                                if (selectedItems.contains(it))
-                                    selectedItems.remove(it)
-                                else
-                                    selectedItems.add(it)
+                    if (currentList.isNotEmpty()) {
+                        LazyVerticalGrid(
+                            modifier = Modifier.fillMaxSize(),
+                            columns = GridCells.Fixed(3),
+                        ) {
+                            items(currentList) {
+                                ItemCard(
+                                    it,
+                                    navController,
+                                    isSelected = selectedItems.contains(it)
+                                ) {
+                                    if (selectedItems.contains(it))
+                                        selectedItems.remove(it)
+                                    else
+                                        selectedItems.add(it)
+                                }
                             }
                         }
+                    } else {
+
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxSize(0.4f)
+                                    .padding(8.dp),
+                                painter = painterResource(id = R.drawable.clean),
+                                contentDescription = "empty",
+                                tint = MaterialTheme.colorScheme.secondaryContainer
+                            )
+
+                            Text(
+                                modifier = Modifier,
+                                text = "Nothing to clean",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+
+                        }
+
                     }
-                } else {
-
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxSize(0.4f)
-                                .padding(8.dp),
-                            painter = painterResource(id = R.drawable.clean),
-                            contentDescription = "empty",
-                            tint = MaterialTheme.colorScheme.secondaryContainer
-                        )
-
-                        Text(
-                            modifier = Modifier,
-                            text = "Nothing to clean",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                        )
-
-                    }
-
                 }
             }
 
