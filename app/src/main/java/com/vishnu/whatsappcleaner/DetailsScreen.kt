@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -110,11 +111,33 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-//            Title(
-//                Modifier
-//                    .padding(0.dp)
-//                    .align(Alignment.Start), listDirectory.name
-//            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+
+                Title(
+                    Modifier
+                        .padding(0.dp),
+                    listDirectory.name
+                )
+
+                Spacer(Modifier.weight(1f))
+
+                IconButton(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(horizontal = 4.dp),
+                    onClick = {
+                        showSortDialog = true
+                    }
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(32.dp),
+                        painter = painterResource(id = R.drawable.ic_sort),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "sort",
+                    )
+                }
+            }
 
             Banner(Modifier.padding(16.dp), listDirectory.size)
 
@@ -180,45 +203,23 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     }
                 }
 
-            Row(
+            IconButton(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .padding(4.dp),
-                    onClick = {
-                        showSortDialog = true
-                    }
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(32.dp),
-                        painter = painterResource(id = R.drawable.ic_sort),
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = "sort",
-                    )
-                }
+                    .align(Alignment.End)
+                    .padding(8.dp)
+                    .size(32.dp)
+                    .padding(4.dp),
+                onClick = {
 
-//                IconButton(
-//                    modifier = Modifier
-//                        .size(32.dp)
-//                        .padding(4.dp),
-//                    onClick = {
-//                        showSortDialog = true
-//                    }
-//                ) {
-//                    Icon(
-//                        modifier = Modifier
-//                            .size(32.dp),
-//                        painter = painterResource(id = R.drawable.ic_select_all),
-//                        tint = MaterialTheme.colorScheme.primary,
-//                        contentDescription = "select all",
-//                    )
-//                }
+                }
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(32.dp),
+                    painter = painterResource(id = R.drawable.check_circle),
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = "select all",
+                )
             }
 
             LaunchedEffect(pagerState) {

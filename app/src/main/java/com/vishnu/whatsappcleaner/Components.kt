@@ -66,9 +66,9 @@ fun Title(modifier: Modifier, text: String) {
     Text(
         modifier = modifier.padding(8.dp),
         text = text,
-        fontSize = 36.sp,
+        fontSize = 32.sp,
         textAlign = TextAlign.Start,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
     )
 }
 
@@ -287,7 +287,7 @@ fun ItemCard(
                             Icon(
                                 modifier = Modifier
                                     .clip(CircleShape),
-                                painter = painterResource(id = R.drawable.check_circle),
+                                painter = painterResource(id = R.drawable.check_circle_filled),
                                 tint = MaterialTheme.colorScheme.primaryContainer,
                                 contentDescription = "checkbox",
                             )
