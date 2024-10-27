@@ -88,7 +88,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                     compareBy { it.lastModified() }
             )
 
-            if (sortBy.contains("Desc"))
+            if (sortBy.contains("Descending"))
                 fileList.reverse()
 
             mutableLiveData.postValue(fileList)

@@ -72,7 +72,7 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                 modifier = Modifier
                     .align(Alignment.Start)
                     .padding(16.dp, 16.dp, 16.dp, 8.dp),
-                text = "Select to Explore",
+                text = "Explore",
                 style = MaterialTheme.typography.titleLarge,
             )
 

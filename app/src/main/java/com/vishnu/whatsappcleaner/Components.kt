@@ -153,7 +153,7 @@ fun SingleCard(
 
             Box(
                 Modifier
-                    .padding(12.dp)
+                    .padding(16.dp)
                     .fillMaxWidth(0.2f)
                     .aspectRatio(1f)
                     .shadow(elevation = 8.dp, shape = CircleShape)
@@ -179,8 +179,9 @@ fun SingleCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Start)
-                        .padding(4.dp),
+                        .padding(2.dp),
                     text = listDirectory.name,
+                    fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleLarge,
                     color = textColor,
                 )
@@ -189,9 +190,9 @@ fun SingleCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Start)
-                        .padding(4.dp),
+                        .padding(2.dp),
                     text = listDirectory.size,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                     style = MaterialTheme.typography.titleSmall,
                     color = textColor,
                 )

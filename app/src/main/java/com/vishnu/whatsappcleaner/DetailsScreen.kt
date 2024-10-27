@@ -74,7 +74,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     var selectedItems = remember { mutableStateListOf<ListFile>() }
 
-    var sortBy = remember { mutableStateOf("Date Desc") }
+    var sortBy = remember { mutableStateOf("Date Descending") }
 
     var isInProgress by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
@@ -110,11 +110,11 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Title(
-                Modifier
-                    .padding(0.dp)
-                    .align(Alignment.Start), listDirectory.name
-            )
+//            Title(
+//                Modifier
+//                    .padding(0.dp)
+//                    .align(Alignment.Start), listDirectory.name
+//            )
 
             Banner(Modifier.padding(16.dp), listDirectory.size)
 
@@ -310,7 +310,13 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 }) {
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                        withStyle(
+                            SpanStyle(
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 1.sp
+                            )
+                        ) {
                             append("Cleanup")
                         }
                     },
@@ -387,17 +393,17 @@ fun SortDialog(
                     modifier = Modifier
                         .wrapContentHeight()
                         .padding(8.dp),
-                    text = "Sort Crieteria",
+                    text = "Sort Criteria",
                     style = MaterialTheme.typography.headlineLarge,
                 )
 
                 listOf(
-                    "Date Asc",
-                    "Date Desc",
-                    "Size Asc",
-                    "Size Desc",
-                    "Name Asc",
-                    "Name Desc",
+                    "Date Ascending",
+                    "Date Descending",
+                    "Size Ascending",
+                    "Size Descending",
+                    "Name Ascending",
+                    "Name Descending",
                 ).forEach { item ->
                     Row(
                         modifier = Modifier
