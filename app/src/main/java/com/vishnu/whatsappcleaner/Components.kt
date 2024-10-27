@@ -181,7 +181,7 @@ fun SingleCard(
                         .align(Alignment.Start)
                         .padding(2.dp),
                     text = listDirectory.name,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Medium,
                     style = MaterialTheme.typography.titleLarge,
                     color = textColor,
                 )

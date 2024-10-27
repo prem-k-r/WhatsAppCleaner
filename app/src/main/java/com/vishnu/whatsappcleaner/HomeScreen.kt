@@ -2,6 +2,7 @@ package com.vishnu.whatsappcleaner
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +19,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
@@ -59,11 +63,16 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Title(
+            Text(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(0.dp)
-                    .align(Alignment.Start),
+                    .align(Alignment.Start)
+                    .padding(8.dp),
                 text = stringResource(R.string.app_name),
+                fontSize = 32.sp,
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Bold,
             )
 
             Banner(Modifier.padding(16.dp), totalSize.value)
@@ -73,6 +82,7 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                     .align(Alignment.Start)
                     .padding(16.dp, 16.dp, 16.dp, 8.dp),
                 text = "Explore",
+                fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleLarge,
             )
 
