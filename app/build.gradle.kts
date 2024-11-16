@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.vishnu.whatsappcleaner"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.vishnu.whatsappcleaner"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "v0.9.3"
 
