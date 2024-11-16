@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -76,7 +77,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     var selectedItems = remember { mutableStateListOf<ListFile>() }
 
-    var sortBy = remember { mutableStateOf("Date Descending") }
+    var sortBy = remember { mutableStateOf("Date") }
+    var isSortDescending = remember { mutableStateOf(true) }
 
     var isInProgress by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
@@ -84,13 +86,18 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     var isAllSelected by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isInProgress, sortBy.value) {
-        viewModel.getFileList(listDirectory.path, sortBy.value).observeForever {
+    LaunchedEffect(isInProgress, sortBy.value, isSortDescending.value) {
+        viewModel.getFileList(listDirectory.path, sortBy.value, isSortDescending.value)
+            .observeForever {
             fileList.clear()
             fileList.addAll(it)
         }
 
-        if (listDirectory.hasSent) viewModel.getFileList("${listDirectory.path}/Sent", sortBy.value)
+        if (listDirectory.hasSent) viewModel.getFileList(
+            "${listDirectory.path}/Sent",
+            sortBy.value,
+            isSortDescending.value
+        )
             .observeForever {
                 sentList.clear()
                 sentList.addAll(it)
@@ -98,7 +105,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
         if (listDirectory.hasPrivate) viewModel.getFileList(
             "${listDirectory.path}/Private",
-            sortBy.value
+            sortBy.value,
+            isSortDescending.value
         )
             .observeForever {
                 privateList.clear()
@@ -350,7 +358,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
             onDismissRequest = {
                 showSortDialog = false
             },
-            sortBy
+            sortBy,
+            isSortDescending
         )
     }
 
@@ -381,7 +390,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 fun SortDialog(
     navController: NavHostController,
     onDismissRequest: () -> Unit,
-    sortBy: MutableState<String>
+    sortBy: MutableState<String>,
+    isSortDescending: MutableState<Boolean>
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -392,6 +402,10 @@ fun SortDialog(
             decorFitsSystemWindows = true
         ),
     ) {
+
+        var isDescending by remember { mutableStateOf(isSortDescending) }
+        var selectedItem by remember { mutableStateOf(sortBy) }
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -415,27 +429,22 @@ fun SortDialog(
                 )
 
                 listOf(
-                    "Date Ascending",
-                    "Date Descending",
-                    "Size Ascending",
-                    "Size Descending",
-                    "Name Ascending",
-                    "Name Descending",
+                    "Date",
+                    "Size",
+                    "Name",
                 ).forEach { item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                sortBy.value = item
-                                onDismissRequest()
+                                selectedItem.value = item
                             },
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
                             selected = sortBy.value == item,
                             onClick = {
-                                sortBy.value = item
-                                onDismissRequest()
+                                selectedItem.value = item
                             },
                             enabled = true,
                             colors = RadioButtonDefaults.colors(
@@ -444,6 +453,47 @@ fun SortDialog(
                         )
                         Text(text = item, modifier = Modifier.padding(start = 8.dp))
                     }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Switch(
+                        checked = isDescending.value,
+                        onCheckedChange = { isDescending.value = it })
+
+                    Text(text = "Descending", modifier = Modifier.padding(start = 8.dp))
+                }
+
+                TextButton(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    shape = RoundedCornerShape(16.dp),
+                    contentPadding = PaddingValues(4.dp),
+                    onClick = {
+                        sortBy.value = selectedItem.value
+                        isSortDescending.value = isDescending.value
+                        onDismissRequest()
+                    }
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                SpanStyle(
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.Medium,
+                                    letterSpacing = 1.sp
+                                )
+                            ) {
+                                append("Apply")
+                            }
+                        },
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
         }

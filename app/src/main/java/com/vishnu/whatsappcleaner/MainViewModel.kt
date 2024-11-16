@@ -68,7 +68,11 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData;
     }
 
-    fun getFileList(path: String, sortBy: String): MutableLiveData<ArrayList<ListFile>> {
+    fun getFileList(
+        path: String,
+        sortBy: String,
+        isSortDescending: Boolean
+    ): MutableLiveData<ArrayList<ListFile>> {
         Log.i("vishnu", "getFileList: $path")
 
         val mutableLiveData = MutableLiveData<ArrayList<ListFile>>(
@@ -88,7 +92,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                     compareBy { it.lastModified() }
             )
 
-            if (sortBy.contains("Descending"))
+            if (isSortDescending)
                 fileList.reverse()
 
             mutableLiveData.postValue(fileList)
