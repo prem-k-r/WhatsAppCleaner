@@ -15,6 +15,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -27,7 +28,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.ads.MobileAds
 import com.vishnu.whatsappcleaner.ui.theme.WhatsAppCleanerTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 
@@ -89,6 +94,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+        val backgroundScope = CoroutineScope(Dispatchers.IO)
+        backgroundScope.launch {
+            MobileAds.initialize(this@MainActivity) {}
+        }
+
         viewModel = ViewModelProvider(
             this, MainViewModelFactory(application)
         ).get(MainViewModel::class.java)
@@ -129,76 +139,78 @@ class MainActivity : ComponentActivity() {
 
                     val navController = rememberNavController()
 
-                    NavHost(
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(paddingValues),
-                        navController = navController,
-                        startDestination = startDestination
+                            .padding(paddingValues)
                     ) {
-                        composable(route = Constants.SCREEN_PERMISSION) {
-                            PermissionScreen(
-                                navController = navController,
-                                permissionsGranted = Pair(
-                                    storagePermissionGranted.value,
-                                    contentResolver.persistedUriPermissions.isNotEmpty()
-                                ),
-                                requestPermission = {
-                                    if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
-                                        storagePermissionResultLauncher.launch(
-                                            Intent(
-                                                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                                Uri.parse("package:" + packageName)
+                        NavHost(
+                            modifier = Modifier,
+                            navController = navController,
+                            startDestination = startDestination
+                        ) {
+                            composable(route = Constants.SCREEN_PERMISSION) {
+                                PermissionScreen(
+                                    navController = navController,
+                                    permissionsGranted = Pair(
+                                        storagePermissionGranted.value,
+                                        contentResolver.persistedUriPermissions.isNotEmpty()
+                                    ),
+                                    requestPermission = {
+                                        if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
+                                            storagePermissionResultLauncher.launch(
+                                                Intent(
+                                                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                                    Uri.parse("package:" + packageName)
+                                                )
                                             )
-                                        )
-                                    } else {
+                                        } else {
 
-                                        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                                                this@MainActivity,
-                                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    this@MainActivity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                )
+                                            ) {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    "Storage permission required for the app to work",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+
+                                            requestPermissions(
+                                                arrayOf(
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                Constants.REQUEST_PERMISSIONS_CODE_WRITE_STORAGE
                                             )
-                                        ) {
-                                            Toast.makeText(
-                                                this@MainActivity,
-                                                "Storage permission required for the app to work",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+
                                         }
+                                    },
+                                    chooseDirectory = {
+                                        resultLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                                            if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
+                                                DocumentsContract.EXTRA_INITIAL_URI,
+                                                Uri.parse(Constants.WHATSAPP_HOME_URI)
+                                            )
+                                        })
+                                    },
+                                )
+                            }
 
-                                        requestPermissions(
-                                            arrayOf(
-                                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE
-                                            ),
-                                            Constants.REQUEST_PERMISSIONS_CODE_WRITE_STORAGE
-                                        )
+                            composable(route = Constants.SCREEN_HOME) {
+                                HomeScreen(navController, viewModel)
+                            }
 
-                                    }
-                                },
-                                chooseDirectory = {
-                                    resultLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                                        if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
-                                            DocumentsContract.EXTRA_INITIAL_URI,
-                                            Uri.parse(Constants.WHATSAPP_HOME_URI)
-                                        )
-                                    })
-                                },
-                            )
+                            composable(route = Constants.SCREEN_DETAILS) {
+                                DetailsScreen(navController, viewModel)
+                            }
                         }
-
-                        composable(route = Constants.SCREEN_HOME) {
-                            HomeScreen(navController, viewModel)
-                        }
-
-                        composable(route = Constants.SCREEN_DETAILS) {
-                            DetailsScreen(navController, viewModel)
-                        }
-
                     }
                 }
             }
         }
-
     }
 
     @Deprecated("Deprecated callback")

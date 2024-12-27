@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
@@ -58,6 +59,9 @@ import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.valentinilk.shimmer.shimmer
 
 
@@ -430,4 +434,21 @@ fun openFile(context: Context, listFile: ListFile) {
             context, "Something went wrong...", Toast.LENGTH_SHORT
         ).show()
     }
+}
+
+@Composable
+fun BannerAd() {
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 2.dp),
+        factory = { context ->
+            AdView(context).apply {
+                setAdSize(AdSize.BANNER)
+                adUnitId =
+                    context.getString(R.string.banner_ad_id)
+                loadAd(AdRequest.Builder().build())
+            }
+        }
+    )
 }

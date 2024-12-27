@@ -92,6 +92,8 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                     text = "Debug Build ${BuildConfig.VERSION_NAME}",
                     style = MaterialTheme.typography.labelSmall,
                 )
+
+            BannerAd()
         }
     }
 }

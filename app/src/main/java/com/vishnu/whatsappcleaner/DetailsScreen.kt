@@ -1,5 +1,6 @@
 package com.vishnu.whatsappcleaner
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,6 +59,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -89,9 +93,9 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     LaunchedEffect(isInProgress, sortBy.value, isSortDescending.value) {
         viewModel.getFileList(listDirectory.path, sortBy.value, isSortDescending.value)
             .observeForever {
-            fileList.clear()
-            fileList.addAll(it)
-        }
+                fileList.clear()
+                fileList.addAll(it)
+            }
 
         if (listDirectory.hasSent) viewModel.getFileList(
             "${listDirectory.path}/Sent",
@@ -349,6 +353,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
+
+            BannerAd()
         }
     }
 
@@ -377,8 +383,19 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                             set(Constants.FORCE_RELOAD_FILE_LIST, true)
                         }
                     }
+
                 showConfirmationDialog = false
                 selectedItems.clear()
+
+                InterstitialAd.load(
+                    navController.context,
+                    navController.context.getString(R.string.interstitial_ad_id),
+                    AdRequest.Builder().build(),
+                    object : InterstitialAdLoadCallback() {
+                        override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                            interstitialAd.show(navController.context as Activity)
+                        }
+                    })
             },
             selectedItems,
             navController
