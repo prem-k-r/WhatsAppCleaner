@@ -39,10 +39,10 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/recycling"
+        android:icon="@drawable/compost"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/recycling"
+        android:roundIcon="@drawable/compost"
         android:supportsRtl="true"
         android:theme="@style/Theme.WhatsAppCleaner"
         tools:targetApi="31">
