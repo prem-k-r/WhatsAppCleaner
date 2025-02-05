@@ -28,11 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.android.gms.ads.MobileAds
 import com.vishnu.whatsappcleaner.ui.theme.WhatsAppCleanerTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 
 
@@ -93,11 +89,6 @@ class MainActivity : ComponentActivity() {
                     ).show()
                 }
             }
-
-        val backgroundScope = CoroutineScope(Dispatchers.IO)
-        backgroundScope.launch {
-            MobileAds.initialize(this@MainActivity) {}
-        }
 
         viewModel = ViewModelProvider(
             this, MainViewModelFactory(application)

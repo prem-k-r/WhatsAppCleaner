@@ -70,8 +70,6 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.glide.compose)
 
-    implementation(libs.play.services.ads)
-
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.runtime.livedata)
     

@@ -1,9 +1,7 @@
 package com.vishnu.whatsappcleaner
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,13 +57,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
@@ -353,8 +347,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
-
-            BannerAd()
         }
     }
 
@@ -386,16 +378,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
                 showConfirmationDialog = false
                 selectedItems.clear()
-
-                InterstitialAd.load(
-                    navController.context,
-                    navController.context.getString(R.string.interstitial_ad_id),
-                    AdRequest.Builder().build(),
-                    object : InterstitialAdLoadCallback() {
-                        override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                            interstitialAd.show(navController.context as Activity)
-                        }
-                    })
             },
             selectedItems,
             navController
