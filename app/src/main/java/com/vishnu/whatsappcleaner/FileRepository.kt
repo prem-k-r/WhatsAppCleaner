@@ -25,8 +25,9 @@ class FileRepository {
                 // since this contains expensive operations :)
                 var size = File(directoryItem.path)
                     .walkBottomUp()
+                    .filter { f -> f.isFile() }
                     .map {
-                        if (it.name == ".nomedia" || it.name == File(directoryItem.path).name)
+                        if (it.name == ".nomedia")
                             0
                         else
                             it.length()
