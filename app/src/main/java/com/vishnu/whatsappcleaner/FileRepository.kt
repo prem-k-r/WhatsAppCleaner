@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 Vishnu Sanal T
+ *
+ * This file is part of WhatsApp Cleaner.
+ *
+ * Quotes Status Creator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.vishnu.whatsappcleaner
 
 import android.content.Context
@@ -10,10 +29,12 @@ class FileRepository {
 
         @JvmStatic
         public suspend fun getDirectoryList(
-            context: Context, homePath: String
+            context: Context,
+            homePath: String
         ): Pair<String, List<ListDirectory>> {
             Log.i(
-                "vishnu", "FileRepository#getDirectoryList: $homePath"
+                "vishnu",
+                "FileRepository#getDirectoryList: $homePath"
             )
 
             var totalSize = 0L
@@ -39,7 +60,8 @@ class FileRepository {
             }
 
             return Pair(
-                formatFileSize(context, totalSize), directoryList
+                formatFileSize(context, totalSize),
+                directoryList
             )
         }
 
@@ -55,7 +77,8 @@ class FileRepository {
             ).walkTopDown().forEach { f ->
                 if (!f.isDirectory && f.name != ".nomedia") list.add(
                     ListFile(
-                        f.path, formatFileSize(context, getSize(f.path))
+                        f.path,
+                        formatFileSize(context, getSize(f.path))
                     )
                 )
             }
@@ -65,7 +88,8 @@ class FileRepository {
 
                 if (!f.isDirectory && f.name != ".nomedia") list.add(
                     ListFile(
-                        f.path, formatFileSize(context, getSize(f.path))
+                        f.path,
+                        formatFileSize(context, getSize(f.path))
                     )
                 )
 
@@ -97,11 +121,14 @@ class FileRepository {
         public fun getLoadingList(): ArrayList<ListFile> {
             val loadingList = ArrayList<ListFile>()
 
-            for (i in 0 until 10) loadingList.add(
-                ListFile(
-                    Constants._LOADING, "0 B"
+            for (i in 0 until 10) {
+                loadingList.add(
+                    ListFile(
+                        Constants._LOADING,
+                        "0 B"
+                    )
                 )
-            )
+            }
 
             return loadingList
         }
@@ -121,6 +148,5 @@ class FileRepository {
 //            Log.i("vishnu", "getSize() called with: path = $path")
             return File(path).walkTopDown().map { it.length() }.sum()
         }
-
     }
 }

@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 Vishnu Sanal T
+ *
+ * This file is part of WhatsApp Cleaner.
+ *
+ * Quotes Status Creator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.vishnu.whatsappcleaner
 
 import android.content.ActivityNotFoundException
@@ -60,7 +79,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.valentinilk.shimmer.shimmer
 
-
 @Composable
 fun Title(modifier: Modifier, text: String) {
     Text(
@@ -75,7 +93,6 @@ fun Title(modifier: Modifier, text: String) {
 // https://stackoverflow.com/a/70586885/9652621
 @Composable
 fun Banner(modifier: Modifier, text: String) {
-
     val bgColor = MaterialTheme.colorScheme.primaryContainer
     val textColor = MaterialTheme.colorScheme.onPrimaryContainer
 
@@ -84,7 +101,6 @@ fun Banner(modifier: Modifier, text: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         val mod = if (text.equals("0 B")) Modifier.shimmer()
         else Modifier
 
@@ -94,11 +110,11 @@ fun Banner(modifier: Modifier, text: String) {
                 .fillMaxWidth(0.4f)
                 .aspectRatio(1f)
                 .shadow(elevation = 16.dp, shape = CircleShape)
-                .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
+                .background(bgColor, shape = CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = buildAnnotatedString {
-
                     val split = text.split(" ")
 
                     withStyle(SpanStyle(fontSize = 32.sp)) {
@@ -122,7 +138,6 @@ fun SingleCard(
     listDirectory: ListDirectory,
     navController: NavHostController,
 ) {
-
     val bgColor = MaterialTheme.colorScheme.secondaryContainer
     val textColor = MaterialTheme.colorScheme.onSecondaryContainer
 
@@ -150,23 +165,21 @@ fun SingleCard(
         onClick = onClick
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-
             Box(
                 Modifier
                     .padding(16.dp)
                     .fillMaxWidth(0.2f)
                     .aspectRatio(1f)
                     .shadow(elevation = 8.dp, shape = CircleShape)
-                    .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
+                    .background(bgColor, shape = CircleShape),
+                contentAlignment = Alignment.Center
             ) {
-
                 Icon(
                     modifier = Modifier.padding(8.dp),
                     imageVector = ImageVector.vectorResource(id = listDirectory.icon),
                     contentDescription = "icon",
                     tint = textColor
                 )
-
             }
 
             Column(
@@ -211,7 +224,6 @@ fun ItemCard(
     toggleSelection: () -> Unit,
 ) {
     key(listFile) {
-
         // only for keeping track of the UI
         var selected by remember { mutableStateOf(isSelected) }
 
@@ -236,7 +248,6 @@ fun ItemCard(
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onLongPress = {
-
                                 if (!selectionEnabled)
                                     return@detectTapGestures
 
@@ -248,7 +259,8 @@ fun ItemCard(
                                 ) toggleSelection()
                             },
                             onTap = {
-                                if (selectionEnabled && !listFile.filePath
+                                if (selectionEnabled &&
+                                    !listFile.filePath
                                         .toString()
                                         .contains(Constants._LOADING)
                                 ) openFile(
@@ -270,7 +282,8 @@ fun ItemCard(
                                 BorderStroke(
                                     2.dp,
                                     if (selected) Color.Unspecified else Color.White,
-                                ), CircleShape
+                                ),
+                                CircleShape
                             )
                             .aspectRatio(1f)
                             .zIndex(4f)
@@ -322,9 +335,7 @@ fun ItemCard(
                         contentDescription = "video",
                     )
                 } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_DOCS) {
-
                     Column {
-
                         Icon(
                             modifier = Modifier
                                 .weight(1f)
@@ -348,11 +359,8 @@ fun ItemCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-
                 } else if (listFile.extension.lowercase() in Constants.EXTENSIONS_AUDIO) {
-
                     Column {
-
                         Icon(
                             modifier = Modifier
                                 .weight(1f)
@@ -376,11 +384,8 @@ fun ItemCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-
                 } else {
-
                     Column {
-
                         Icon(
                             modifier = Modifier
                                 .weight(1f)
@@ -413,21 +418,30 @@ fun ItemCard(
 fun openFile(context: Context, listFile: ListFile) {
     try {
         startActivity(
-            context, Intent(
-                Intent.ACTION_VIEW, FileProvider.getUriForFile(
-                    context, context.packageName + ".provider", listFile
+            context,
+            Intent(
+                Intent.ACTION_VIEW,
+                FileProvider.getUriForFile(
+                    context,
+                    context.packageName + ".provider",
+                    listFile
                 )
-            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null
+            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+            null
         )
     } catch (e: ActivityNotFoundException) {
         e.printStackTrace()
         Toast.makeText(
-            context, "No application found to open this file.", Toast.LENGTH_SHORT
+            context,
+            "No application found to open this file.",
+            Toast.LENGTH_SHORT
         ).show()
     } catch (e: IllegalArgumentException) {
         e.printStackTrace()
         Toast.makeText(
-            context, "Something went wrong...", Toast.LENGTH_SHORT
+            context,
+            "Something went wrong...",
+            Toast.LENGTH_SHORT
         ).show()
     }
 }

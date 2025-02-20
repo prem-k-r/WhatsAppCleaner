@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 Vishnu Sanal T
+ *
+ * This file is part of WhatsApp Cleaner.
+ *
+ * Quotes Status Creator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.vishnu.whatsappcleaner
 
 import androidx.compose.foundation.layout.Column
@@ -24,7 +43,6 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
-
     var totalSize = remember { mutableStateOf("0 B") }
 
     var forceReload by remember { mutableStateOf(false) }
@@ -35,7 +53,6 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
     ) ?: false
 
     LaunchedEffect(key1 = forceReload) {
-
         if (forceReload) {
             totalSize.value = "0 B"
             directoryList.clear()
@@ -59,7 +76,6 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
             Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Title(
                 Modifier
                     .padding(0.dp)

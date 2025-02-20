@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 Vishnu Sanal T
+ *
+ * This file is part of WhatsApp Cleaner.
+ *
+ * Quotes Status Creator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.vishnu.whatsappcleaner
 
 import android.app.Application
@@ -16,7 +35,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     private val storeData = StoreData(application.applicationContext)
 
-    private var totalSize: String? = null;
+    private var totalSize: String? = null
     private var directoryList: List<ListDirectory> =
         ListDirectory.getDirectoryList(Constants._LOADING)
 
@@ -24,7 +43,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         Log.i("vishnu", "saveHomeUri: $homePath")
         viewModelScope.launch(Dispatchers.Default) {
             storeData.set(
-                Constants.WHATSAPP_HOME_URI, homePath
+                Constants.WHATSAPP_HOME_URI,
+                homePath
             )
         }
     }
@@ -34,7 +54,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         viewModelScope.launch(Dispatchers.Default) {
             mutableLiveData.postValue(storeData.get(Constants.WHATSAPP_HOME_URI))
         }
-        return mutableLiveData;
+        return mutableLiveData
     }
 
     fun getDirectoryList(forceReload: Boolean = false): MutableLiveData<Pair<String, List<ListDirectory>>> {
@@ -42,16 +62,17 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
         val mutableLiveData = MutableLiveData<Pair<String, List<ListDirectory>>>(
             Pair(
-                "0 B", directoryList
+                "0 B",
+                directoryList
             )
         )
 
         viewModelScope.launch(Dispatchers.Default) {
-
             if (totalSize == null || forceReload) storeData.get(Constants.WHATSAPP_HOME_URI)
                 ?.let { homeUri ->
                     val pair = FileRepository.getDirectoryList(
-                        application, homeUri
+                        application,
+                        homeUri
                     )
 
                     totalSize = pair.first
@@ -60,12 +81,13 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
             mutableLiveData.postValue(
                 Pair(
-                    totalSize!!, directoryList
+                    totalSize!!,
+                    directoryList
                 )
             )
         }
 
-        return mutableLiveData;
+        return mutableLiveData
     }
 
     fun getFileList(
@@ -80,8 +102,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         )
 
         viewModelScope.launch(Dispatchers.Default) {
-
-            val fileList = FileRepository.getFileList(application, path);
+            val fileList = FileRepository.getFileList(application, path)
 
             fileList.sortWith(
                 if (sortBy.contains("Name"))
@@ -98,7 +119,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             mutableLiveData.postValue(fileList)
         }
 
-        return mutableLiveData;
+        return mutableLiveData
     }
 
     fun listDirectories(path: String): MutableLiveData<ArrayList<String>> {
@@ -112,11 +133,11 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             )
         }
 
-        return mutableLiveData;
+        return mutableLiveData
     }
 
     fun delete(fileList: List<ListFile>): MutableLiveData<Boolean> {
-        Log.i("vishnu", "delete() called with: fileList = ${fileList}")
+        Log.i("vishnu", "delete() called with: fileList = $fileList")
 
         val mutableLiveData = MutableLiveData<Boolean>(true)
 
@@ -133,7 +154,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 class MainViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST") return MainViewModel(application) as T
+            @Suppress("UNCHECKED_CAST")
+            return MainViewModel(application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

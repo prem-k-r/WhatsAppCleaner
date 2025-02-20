@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 Vishnu Sanal T
+ *
+ * This file is part of WhatsApp Cleaner.
+ *
+ * Quotes Status Creator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.vishnu.whatsappcleaner
 
 import android.widget.Toast
@@ -62,7 +81,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
-
     val listDirectory = navController.previousBackStackEntry?.savedStateHandle?.get<ListDirectory>(
         Constants.DETAILS_LIST_ITEM
     )
@@ -113,15 +131,14 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     }
 
     Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             Modifier.padding(top = 16.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-
                 Title(
                     Modifier
                         .padding(0.dp),
@@ -165,29 +182,28 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     modifier = Modifier.padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-
                     val arr = arrayListOf("Received")
 
                     if (listDirectory.hasSent)
-                        arr.add("Sent");
+                        arr.add("Sent")
 
                     if (listDirectory.hasPrivate)
                         arr.add("Private")
 
                     for (s in arr) {
-
-                        TextButton(modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(4.dp, 8.dp, 4.dp, 0.dp)
-                            .border(
-                                BorderStroke(
-                                    2.dp,
-                                    if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
-                                    else MaterialTheme.colorScheme.background,
+                        TextButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(4.dp, 8.dp, 4.dp, 0.dp)
+                                .border(
+                                    BorderStroke(
+                                        2.dp,
+                                        if (arr[pagerState.settledPage] != s) MaterialTheme.colorScheme.primaryContainer
+                                        else MaterialTheme.colorScheme.background,
+                                    ),
+                                    RoundedCornerShape(64.dp),
                                 ),
-                                RoundedCornerShape(64.dp),
-                            ),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 containerColor = if (arr[pagerState.settledPage] == s) MaterialTheme.colorScheme.primaryContainer
                                 else MaterialTheme.colorScheme.background
@@ -200,7 +216,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                                         arr.indexOf(s)
                                     )
                                 }
-                            }) {
+                            }
+                        ) {
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
@@ -210,7 +227,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                                 style = MaterialTheme.typography.headlineSmall,
                             )
                         }
-
                     }
                 }
 
@@ -256,7 +272,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
 
             key(isAllSelected) {
                 HorizontalPager(
-                    modifier = Modifier.weight(1f), state = pagerState
+                    modifier = Modifier.weight(1f),
+                    state = pagerState
                 ) { page ->
 
                     if (pagerState.currentPage == 0) {
@@ -286,7 +303,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                             }
                         }
                     } else {
-
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
@@ -307,16 +323,15 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Medium,
                             )
-
                         }
-
                     }
                 }
             }
 
-            TextButton(modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 shape = RoundedCornerShape(64.dp),
                 contentPadding = PaddingValues(12.dp),
@@ -330,7 +345,8 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                }) {
+                }
+            ) {
                 Text(
                     text = buildAnnotatedString {
                         withStyle(
@@ -367,7 +383,6 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 showConfirmationDialog = false
             },
             onConfirmation = {
-
                 viewModel.delete(selectedItems.toList())
                     .observeForever {
                         isInProgress = it
@@ -401,7 +416,6 @@ fun SortDialog(
             decorFitsSystemWindows = true
         ),
     ) {
-
         var isDescending by remember { mutableStateOf(isSortDescending) }
         var selectedItem by remember { mutableStateOf(sortBy) }
 
@@ -461,14 +475,16 @@ fun SortDialog(
                 ) {
                     Switch(
                         checked = isDescending.value,
-                        onCheckedChange = { isDescending.value = it })
+                        onCheckedChange = { isDescending.value = it }
+                    )
 
                     Text(text = "Descending", modifier = Modifier.padding(start = 8.dp))
                 }
 
-                TextButton(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
                     colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     shape = RoundedCornerShape(16.dp),
                     contentPadding = PaddingValues(4.dp),
@@ -533,7 +549,6 @@ fun ConfirmationDialog(
                     modifier = Modifier.wrapContentHeight(),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-
                     Column(
                         Modifier
                             .weight(0.6f)
@@ -572,7 +587,8 @@ fun ConfirmationDialog(
                         onClick = onConfirmation,
                         content = {
                             Text(
-                                text = "Confirm", style = MaterialTheme.typography.titleMedium,
+                                text = "Confirm",
+                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Medium
                             )
                         },

@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 Vishnu Sanal T
+ *
+ * This file is part of WhatsApp Cleaner.
+ *
+ * Quotes Status Creator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.vishnu.whatsappcleaner
 
 import android.Manifest
@@ -31,10 +50,9 @@ import androidx.navigation.compose.rememberNavController
 import com.vishnu.whatsappcleaner.ui.theme.WhatsAppCleanerTheme
 import java.io.File
 
-
 class MainActivity : ComponentActivity() {
 
-    private lateinit var viewModel: MainViewModel;
+    private lateinit var viewModel: MainViewModel
 
     private lateinit var storagePermissionGranted: MutableState<Boolean>
 
@@ -45,15 +63,14 @@ class MainActivity : ComponentActivity() {
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == RESULT_OK && result.data != null && result.data!!.data != null && result.data!!.data!!.path != null) {
-
                     val relativePath = result.data!!.data!!.path!!.split(":")[1]
 
                     val absolutePath =
                         Environment.getExternalStorageDirectory().absolutePath + File.separator + relativePath
 
                     viewModel.listDirectories(absolutePath).observeForever {
-
-                        if (it.toString().contains("/Media") && it.toString()
+                        if (it.toString().contains("/Media") &&
+                            it.toString()
                                 .contains("/Databases")
                         ) {
                             contentResolver.takePersistableUriPermission(
@@ -74,7 +91,9 @@ class MainActivity : ComponentActivity() {
                     }
                 } else {
                     Toast.makeText(
-                        this, "Please grant permissions...", Toast.LENGTH_SHORT
+                        this,
+                        "Please grant permissions...",
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -91,22 +110,22 @@ class MainActivity : ComponentActivity() {
             }
 
         viewModel = ViewModelProvider(
-            this, MainViewModelFactory(application)
+            this,
+            MainViewModelFactory(application)
         ).get(MainViewModel::class.java)
 
         setContent {
             WhatsAppCleanerTheme {
-
                 Scaffold { paddingValues ->
 
                     storagePermissionGranted =
                         remember {
                             mutableStateOf(
                                 (Build.VERSION.SDK_INT >= VERSION_CODES.R && Environment.isExternalStorageManager()) ||
-                                        ActivityCompat.checkSelfPermission(
-                                            this@MainActivity,
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                        ) == PackageManager.PERMISSION_GRANTED
+                                    ActivityCompat.checkSelfPermission(
+                                        this@MainActivity,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    ) == PackageManager.PERMISSION_GRANTED
                             )
                         }
 
@@ -118,12 +137,14 @@ class MainActivity : ComponentActivity() {
                         else if (ActivityCompat.checkSelfPermission(
                                 this@MainActivity,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED
-                            && contentResolver.persistedUriPermissions.isNotEmpty()
+                            ) == PackageManager.PERMISSION_GRANTED &&
+                            contentResolver.persistedUriPermissions.isNotEmpty()
                         ) Constants.SCREEN_HOME
                         else {
                             Toast.makeText(
-                                this, "Please grant all permissions...", Toast.LENGTH_SHORT
+                                this,
+                                "Please grant all permissions...",
+                                Toast.LENGTH_SHORT
                             ).show()
                             Constants.SCREEN_PERMISSION
                         }
@@ -156,7 +177,6 @@ class MainActivity : ComponentActivity() {
                                                 )
                                             )
                                         } else {
-
                                             if (ActivityCompat.shouldShowRequestPermissionRationale(
                                                     this@MainActivity,
                                                     Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -176,16 +196,17 @@ class MainActivity : ComponentActivity() {
                                                 ),
                                                 Constants.REQUEST_PERMISSIONS_CODE_WRITE_STORAGE
                                             )
-
                                         }
                                     },
                                     chooseDirectory = {
-                                        resultLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                                            if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
-                                                DocumentsContract.EXTRA_INITIAL_URI,
-                                                Uri.parse(Constants.WHATSAPP_HOME_URI)
-                                            )
-                                        })
+                                        resultLauncher.launch(
+                                            Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                                                if (Build.VERSION.SDK_INT >= VERSION_CODES.O) putExtra(
+                                                    DocumentsContract.EXTRA_INITIAL_URI,
+                                                    Uri.parse(Constants.WHATSAPP_HOME_URI)
+                                                )
+                                            }
+                                        )
                                     },
                                 )
                             }
@@ -242,7 +263,7 @@ class MainActivity : ComponentActivity() {
 
     private fun restartActivity() {
         // terrible hack!
-        val intent = intent;
+        val intent = intent
         finish()
         startActivity(intent)
     }
