@@ -37,7 +37,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     private var totalSize: String? = null
     private var directoryList: List<ListDirectory> =
-        ListDirectory.getDirectoryList(Constants._LOADING)
+        ListDirectory.getDirectoryList(Constants.LIST_LOADING_INDICATION)
 
     fun saveHomeUri(homePath: String) {
         Log.i("vishnu", "saveHomeUri: $homePath")

@@ -144,7 +144,7 @@ fun SingleCard(
     var onClick: () -> Unit
     var modifier: Modifier
 
-    if (listDirectory.path.contains(Constants._LOADING)) {
+    if (listDirectory.path.contains(Constants.LIST_LOADING_INDICATION)) {
         modifier = Modifier.shimmer()
         onClick = { }
     } else {
@@ -228,7 +228,7 @@ fun ItemCard(
         var selected by remember { mutableStateOf(isSelected) }
 
         var modifier =
-            if (listFile.filePath.toString().contains(Constants._LOADING))
+            if (listFile.filePath.toString().contains(Constants.LIST_LOADING_INDICATION))
                 Modifier.shimmer()
             else
                 Modifier
@@ -255,14 +255,14 @@ fun ItemCard(
 
                                 if (!listFile.filePath
                                         .toString()
-                                        .contains(Constants._LOADING)
+                                        .contains(Constants.LIST_LOADING_INDICATION)
                                 ) toggleSelection()
                             },
                             onTap = {
                                 if (selectionEnabled &&
                                     !listFile.filePath
                                         .toString()
-                                        .contains(Constants._LOADING)
+                                        .contains(Constants.LIST_LOADING_INDICATION)
                                 ) openFile(
                                     navController.context,
                                     listFile
@@ -292,7 +292,7 @@ fun ItemCard(
 
                                 if (!listFile.filePath
                                         .toString()
-                                        .contains(Constants._LOADING)
+                                        .contains(Constants.LIST_LOADING_INDICATION)
                                 ) toggleSelection()
                             }
                     ) {

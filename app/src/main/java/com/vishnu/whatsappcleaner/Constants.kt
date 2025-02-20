@@ -31,7 +31,7 @@ object Constants {
 
     const val REQUEST_PERMISSIONS_CODE_WRITE_STORAGE = 2
 
-    const val _LOADING: String = "com.vishnu.whatsappcleaner.loading"
+    const val LIST_LOADING_INDICATION: String = "com.vishnu.whatsappcleaner.loading"
 
     final val EXTENSIONS_IMAGE = listOf(
         "jpg",

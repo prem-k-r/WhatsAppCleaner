@@ -56,7 +56,7 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
         if (forceReload) {
             totalSize.value = "0 B"
             directoryList.clear()
-            directoryList.addAll(ListDirectory.getDirectoryList(Constants._LOADING))
+            directoryList.addAll(ListDirectory.getDirectoryList(Constants.LIST_LOADING_INDICATION))
         }
 
         viewModel.getDirectoryList(forceReload).observeForever {

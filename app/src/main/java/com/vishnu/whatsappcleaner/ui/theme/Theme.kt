@@ -133,7 +133,7 @@ fun WhatsAppCleanerTheme(
         else -> LightColorScheme
     }
 
-    val Typography = Typography(
+    val typography = Typography(
         displayLarge = Typography.displayLarge.copy(fontFamily = fontFamily),
         displayMedium = Typography.displayMedium.copy(fontFamily = fontFamily),
         displaySmall = Typography.displaySmall.copy(fontFamily = fontFamily),
@@ -157,7 +157,7 @@ fun WhatsAppCleanerTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = typography,
         content = content
     )
 }

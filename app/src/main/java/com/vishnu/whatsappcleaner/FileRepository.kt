@@ -124,7 +124,7 @@ class FileRepository {
             for (i in 0 until 10) {
                 loadingList.add(
                     ListFile(
-                        Constants._LOADING,
+                        Constants.LIST_LOADING_INDICATION,
                         "0 B"
                     )
                 )
