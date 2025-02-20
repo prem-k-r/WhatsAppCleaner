@@ -21,9 +21,20 @@ android {
         }
     }
 
+    // doesn't make much of a difference, can be enabled when it does
+//    splits {
+//        abi {
+//            isEnable = true
+//            reset()
+//            include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
+//            isUniversalApk = true
+//        }
+//    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -72,7 +83,7 @@ dependencies {
 
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.runtime.livedata)
-    
+
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)
