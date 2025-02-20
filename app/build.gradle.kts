@@ -60,6 +60,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+//    https://gitlab.com/fdroid/fdroidserver/-/issues/1056
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs.
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles.
+        includeInBundle = false
+    }
 }
 
 dependencies {
