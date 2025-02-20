@@ -1,3 +1,0 @@
-- initial release
-
-Full Changelog -> https://github.com/VishnuSanal/Quotes/compare/v1.0.0
