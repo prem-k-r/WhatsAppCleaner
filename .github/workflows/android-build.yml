@@ -1,0 +1,22 @@
+name: Android Build
+
+on:  [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Up JDK Environment
+        uses: actions/setup-java@v4
+        with:
+          distribution: "adopt"
+          java-version: 21
+
+      - name: Spotless Test
+        run: ./gradlew spotlessCheck --stacktrace
+
+      - name: Gradle Build
+        run: ./gradlew testDebug --stacktrace
