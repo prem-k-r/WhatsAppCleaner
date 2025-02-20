@@ -12,8 +12,8 @@ android {
         applicationId = "com.vishnu.whatsappcleaner"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "v1.0.1"
+        versionCode = 5
+        versionName = "v1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
