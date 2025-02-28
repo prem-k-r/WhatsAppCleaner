@@ -46,7 +46,6 @@ import com.vishnu.whatsappcleaner.Constants
 import com.vishnu.whatsappcleaner.MainViewModel
 import com.vishnu.whatsappcleaner.R
 import com.vishnu.whatsappcleaner.ViewState
-import com.vishnu.whatsappcleaner.data.FileRepository
 import com.vishnu.whatsappcleaner.model.ListDirectory
 
 @Composable

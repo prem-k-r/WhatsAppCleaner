@@ -105,7 +105,6 @@ fun Banner(modifier: Modifier, directoryItem: ViewState<Pair<String, List<ListDi
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         val mod = if (directoryItem is ViewState.Success) Modifier
         else Modifier.shimmer()
 
@@ -115,13 +114,13 @@ fun Banner(modifier: Modifier, directoryItem: ViewState<Pair<String, List<ListDi
                 .fillMaxWidth(0.4f)
                 .aspectRatio(1f)
                 .shadow(elevation = 16.dp, shape = CircleShape)
-                .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
+                .background(bgColor, shape = CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = buildAnnotatedString {
                     when (directoryItem) {
                         is ViewState.Success -> {
-
                             var size = directoryItem.data.first
 
                             if (size.contains(" ")) {
@@ -195,7 +194,8 @@ fun SingleCard(
                     .fillMaxWidth(0.2f)
                     .aspectRatio(1f)
                     .shadow(elevation = 8.dp, shape = CircleShape)
-                    .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
+                    .background(bgColor, shape = CircleShape),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     modifier = Modifier.padding(8.dp),
@@ -263,46 +263,52 @@ fun ItemCard(
                     if (selected) 16.dp else 8.dp
                 ),
         ) {
-            Box(Modifier
-                .fillMaxSize()
-                .clip(shape = RoundedCornerShape(8.dp))
-                .pointerInput(Unit) {
-                    detectTapGestures(onLongPress = {
-                        if (!selectionEnabled) return@detectTapGestures
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .pointerInput(Unit) {
+                        detectTapGestures(onLongPress = {
+                            if (!selectionEnabled) return@detectTapGestures
 
-                        selected = !selected
+                            selected = !selected
 
-                        if (!listFile.filePath.toString()
-                                .contains(Constants.LIST_LOADING_INDICATION)
-                        ) toggleSelection()
-                    }, onTap = {
-                        if (selectionEnabled && !listFile.filePath.toString()
-                                .contains(Constants.LIST_LOADING_INDICATION)
-                        ) openFile(
-                            navController.context, listFile
+                            if (!listFile.filePath.toString()
+                                    .contains(Constants.LIST_LOADING_INDICATION)
+                            ) toggleSelection()
+                        }, onTap = {
+                            if (selectionEnabled && !listFile.filePath.toString()
+                                    .contains(Constants.LIST_LOADING_INDICATION)
+                            ) openFile(
+                                navController.context,
+                                listFile
+                            )
+                        })
+                    }
+            ) {
+                if (selectionEnabled) Box(
+                    Modifier
+                        .padding(8.dp)
+                        .size(24.dp)
+                        .align(Alignment.TopStart)
+                        .clip(CircleShape)
+                        .border(
+                            BorderStroke(
+                                2.dp,
+                                if (selected) Color.Unspecified else Color.White,
+                            ),
+                            CircleShape
                         )
-                    })
-                }) {
-                if (selectionEnabled) Box(Modifier
-                    .padding(8.dp)
-                    .size(24.dp)
-                    .align(Alignment.TopStart)
-                    .clip(CircleShape)
-                    .border(
-                        BorderStroke(
-                            2.dp,
-                            if (selected) Color.Unspecified else Color.White,
-                        ), CircleShape
-                    )
-                    .aspectRatio(1f)
-                    .zIndex(4f)
-                    .clickable {
-                        selected = !selected
+                        .aspectRatio(1f)
+                        .zIndex(4f)
+                        .clickable {
+                            selected = !selected
 
-                        if (!listFile.filePath.toString()
-                                .contains(Constants.LIST_LOADING_INDICATION)
-                        ) toggleSelection()
-                    }) {
+                            if (!listFile.filePath.toString()
+                                    .contains(Constants.LIST_LOADING_INDICATION)
+                            ) toggleSelection()
+                        }
+                ) {
                     if (selected) Icon(
                         modifier = Modifier.clip(CircleShape),
                         painter = painterResource(id = R.drawable.check_circle_filled),
@@ -423,21 +429,30 @@ fun ItemCard(
 fun openFile(context: Context, listFile: ListFile) {
     try {
         startActivity(
-            context, Intent(
-                Intent.ACTION_VIEW, FileProvider.getUriForFile(
-                    context, context.packageName + ".provider", listFile
+            context,
+            Intent(
+                Intent.ACTION_VIEW,
+                FileProvider.getUriForFile(
+                    context,
+                    context.packageName + ".provider",
+                    listFile
                 )
-            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null
+            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+            null
         )
     } catch (e: ActivityNotFoundException) {
         e.printStackTrace()
         Toast.makeText(
-            context, "No application found to open this file.", Toast.LENGTH_SHORT
+            context,
+            "No application found to open this file.",
+            Toast.LENGTH_SHORT
         ).show()
     } catch (e: IllegalArgumentException) {
         e.printStackTrace()
         Toast.makeText(
-            context, "Something went wrong...", Toast.LENGTH_SHORT
+            context,
+            "Something went wrong...",
+            Toast.LENGTH_SHORT
         ).show()
     }
 }
