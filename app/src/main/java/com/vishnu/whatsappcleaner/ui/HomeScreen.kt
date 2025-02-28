@@ -38,9 +38,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.valentinilk.shimmer.shimmer
 import com.vishnu.whatsappcleaner.BuildConfig
 import com.vishnu.whatsappcleaner.Constants
 import com.vishnu.whatsappcleaner.MainViewModel
@@ -82,7 +87,41 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                 stringResource(R.string.app_name)
             )
 
-            Banner(Modifier.padding(16.dp), directoryItem.value)
+            val modifier = if (directoryItem.value is ViewState.Success) Modifier
+            else Modifier.shimmer()
+
+            Banner(
+                modifier.padding(16.dp),
+                buildAnnotatedString {
+                    when (directoryItem.value) {
+                        is ViewState.Success -> {
+                            var size = (directoryItem.value as ViewState.Success).data.first
+
+                            if (size.contains(" ")) {
+                                val split = size.split(" ")
+                                withStyle(SpanStyle(fontSize = 32.sp)) {
+                                    append(split.get(0))
+                                }
+                                withStyle(SpanStyle(fontSize = 18.sp)) {
+                                    append(" ${split.get(1)}")
+                                }
+                            } else {
+                                withStyle(SpanStyle(fontSize = 28.sp)) {
+                                    append(size)
+                                }
+                            }
+                        }
+
+                        is ViewState.Loading -> withStyle(SpanStyle(fontSize = 18.sp)) {
+                            append("Loading...")
+                        }
+
+                        is ViewState.Error -> withStyle(SpanStyle(fontSize = 18.sp)) {
+                            append("Error")
+                        }
+                    }
+                }
+            )
 
             Text(
                 modifier = Modifier

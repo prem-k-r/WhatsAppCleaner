@@ -170,7 +170,26 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 }
             }
 
-//            Banner(Modifier.padding(16.dp), ) // todo
+            Banner(
+                Modifier.padding(16.dp),
+                buildAnnotatedString {
+                    var size = listDirectory.size
+
+                    if (size.contains(" ")) {
+                        val split = size.split(" ")
+                        withStyle(SpanStyle(fontSize = 32.sp)) {
+                            append(split.get(0))
+                        }
+                        withStyle(SpanStyle(fontSize = 18.sp)) {
+                            append(" ${split.get(1)}")
+                        }
+                    } else {
+                        withStyle(SpanStyle(fontSize = 28.sp)) {
+                            append(size)
+                        }
+                    }
+                }
+            )
 
             val pagerState = rememberPagerState(pageCount = {
                 if (listDirectory.hasSent)

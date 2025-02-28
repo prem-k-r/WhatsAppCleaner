@@ -62,6 +62,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -105,11 +106,8 @@ fun Banner(modifier: Modifier, directoryItem: ViewState<Pair<String, List<ListDi
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val mod = if (directoryItem is ViewState.Success) Modifier
-        else Modifier.shimmer()
-
         Box(
-            mod
+            modifier
                 .padding(12.dp)
                 .fillMaxWidth(0.4f)
                 .aspectRatio(1f)
@@ -147,6 +145,36 @@ fun Banner(modifier: Modifier, directoryItem: ViewState<Pair<String, List<ListDi
                         }
                     }
                 },
+                style = MaterialTheme.typography.titleLarge,
+                color = textColor,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+fun Banner(modifier: Modifier, text: AnnotatedString) {
+    val bgColor = MaterialTheme.colorScheme.primaryContainer
+    val textColor = MaterialTheme.colorScheme.onPrimaryContainer
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            Modifier
+                .padding(12.dp)
+                .fillMaxWidth(0.4f)
+                .aspectRatio(1f)
+                .shadow(elevation = 16.dp, shape = CircleShape)
+                .background(bgColor, shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
                 style = MaterialTheme.typography.titleLarge,
                 color = textColor,
                 fontWeight = FontWeight.Bold,
@@ -277,7 +305,8 @@ fun ItemCard(
                                     .contains(Constants.LIST_LOADING_INDICATION)
                             ) toggleSelection()
                         }, onTap = {
-                            if (selectionEnabled && !listFile.filePath.toString()
+                            if (selectionEnabled &&
+                                !listFile.filePath.toString()
                                     .contains(Constants.LIST_LOADING_INDICATION)
                             ) openFile(
                                 navController.context,
