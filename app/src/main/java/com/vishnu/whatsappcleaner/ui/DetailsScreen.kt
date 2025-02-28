@@ -170,7 +170,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 }
             }
 
-            Banner(Modifier.padding(16.dp), listDirectory.size)
+//            Banner(Modifier.padding(16.dp), ) // todo
 
             val pagerState = rememberPagerState(pageCount = {
                 if (listDirectory.hasSent)

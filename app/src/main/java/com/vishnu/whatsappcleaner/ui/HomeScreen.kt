@@ -29,8 +29,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,34 +45,28 @@ import com.vishnu.whatsappcleaner.BuildConfig
 import com.vishnu.whatsappcleaner.Constants
 import com.vishnu.whatsappcleaner.MainViewModel
 import com.vishnu.whatsappcleaner.R
+import com.vishnu.whatsappcleaner.ViewState
+import com.vishnu.whatsappcleaner.data.FileRepository
 import com.vishnu.whatsappcleaner.model.ListDirectory
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
-    var totalSize = remember { mutableStateOf("0 B") }
-
     var forceReload by remember { mutableStateOf(false) }
-    var directoryList = remember { mutableStateListOf<ListDirectory>() }
 
     forceReload = navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(
         Constants.FORCE_RELOAD_FILE_LIST
     ) ?: false
 
-    LaunchedEffect(key1 = forceReload) {
-        if (forceReload) {
-            totalSize.value = "0 B"
-            directoryList.clear()
-            directoryList.addAll(ListDirectory.getDirectoryList(Constants.LIST_LOADING_INDICATION))
-        }
+    val directoryItem: State<ViewState<Pair<String, List<ListDirectory>>>> =
+        viewModel.directoryItem.collectAsState()
 
-        viewModel.getDirectoryList(forceReload).observeForever {
-            totalSize.value = it.first
+    if (forceReload) {
+        viewModel.getDirectoryList()
+    }
 
-            directoryList.clear()
-            directoryList.addAll(it.second)
-
-            forceReload = false
-        }
+    // trigger when moving from permission screen to home screen on Android 15
+    LaunchedEffect(key1 = null) {
+        viewModel.getDirectoryList()
     }
 
     Surface(
@@ -88,7 +83,7 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                 stringResource(R.string.app_name)
             )
 
-            Banner(Modifier.padding(16.dp), totalSize.value)
+            Banner(Modifier.padding(16.dp), directoryItem.value)
 
             Text(
                 modifier = Modifier
@@ -99,10 +94,29 @@ fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            LazyColumn(Modifier.weight(1f)) {
-                items(directoryList) {
-                    SingleCard(it, navController)
+            when (directoryItem.value) {
+                is ViewState.Success -> {
+                    LazyColumn(Modifier.weight(1f)) {
+                        items((directoryItem.value as ViewState.Success<Pair<String, List<ListDirectory>>>).data.second) {
+                            SingleCard(it, navController)
+                        }
+                    }
                 }
+
+                is ViewState.Loading -> LazyColumn(Modifier.weight(1f)) {
+                    items(ListDirectory.getDirectoryList(Constants.LIST_LOADING_INDICATION)) {
+                        SingleCard(it, navController)
+                    }
+                }
+
+                is ViewState.Error -> Text(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(16.dp),
+                    text = "Error loading directory list\n${(directoryItem.value as ViewState.Error).message}",
+                    style = MaterialTheme.typography.labelSmall,
+                )
             }
 
             if (BuildConfig.DEBUG)

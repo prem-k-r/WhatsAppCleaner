@@ -31,6 +31,9 @@ import com.vishnu.whatsappcleaner.data.StoreData
 import com.vishnu.whatsappcleaner.model.ListDirectory
 import com.vishnu.whatsappcleaner.model.ListFile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -39,9 +42,16 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     private val storeData = StoreData(application.applicationContext)
 
-    private var totalSize: String? = null
-    private var directoryList: List<ListDirectory> =
-        ListDirectory.getDirectoryList(Constants.LIST_LOADING_INDICATION)
+    private val _directoryItem =
+        MutableStateFlow<ViewState<Pair<String, List<ListDirectory>>>>(ViewState.Loading)
+    val directoryItem: StateFlow<ViewState<Pair<String, List<ListDirectory>>>> =
+        _directoryItem.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.Default) {
+            getDirectoryList()
+        }
+    }
 
     fun saveHomeUri(homePath: String) {
         Log.i("vishnu", "saveHomeUri: $homePath")
@@ -61,37 +71,20 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         return mutableLiveData
     }
 
-    fun getDirectoryList(forceReload: Boolean = false): MutableLiveData<Pair<String, List<ListDirectory>>> {
+    fun getDirectoryList() {
         Log.i("vishnu", "getDirectoryList() called")
 
-        val mutableLiveData = MutableLiveData<Pair<String, List<ListDirectory>>>(
-            Pair(
-                "0 B",
-                directoryList
-            )
-        )
-
         viewModelScope.launch(Dispatchers.Default) {
-            if (totalSize == null || forceReload) storeData.get(Constants.WHATSAPP_HOME_URI)
+            storeData.get(Constants.WHATSAPP_HOME_URI)
                 ?.let { homeUri ->
                     val pair = FileRepository.getDirectoryList(
                         application,
                         homeUri
                     )
-
-                    totalSize = pair.first
-                    directoryList = pair.second
+                    Log.e("vishnu", "getDirectoryList: $pair")
+                    _directoryItem.value = ViewState.Success(pair)
                 }
-
-            mutableLiveData.postValue(
-                Pair(
-                    totalSize!!,
-                    directoryList
-                )
-            )
         }
-
-        return mutableLiveData
     }
 
     fun getFileList(
@@ -153,6 +146,12 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
         return mutableLiveData
     }
+}
+
+sealed class ViewState<out T> {
+    data object Loading : ViewState<Nothing>()
+    data class Success<T>(val data: T) : ViewState<T>()
+    data class Error(val message: String) : ViewState<Nothing>()
 }
 
 class MainViewModelFactory(private val application: Application) : ViewModelProvider.Factory {

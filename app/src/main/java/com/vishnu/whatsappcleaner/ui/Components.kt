@@ -80,6 +80,7 @@ import com.bumptech.glide.integration.compose.placeholder
 import com.valentinilk.shimmer.shimmer
 import com.vishnu.whatsappcleaner.Constants
 import com.vishnu.whatsappcleaner.R
+import com.vishnu.whatsappcleaner.ViewState
 import com.vishnu.whatsappcleaner.model.ListDirectory
 import com.vishnu.whatsappcleaner.model.ListFile
 
@@ -94,9 +95,8 @@ fun Title(modifier: Modifier, text: String) {
     )
 }
 
-// https://stackoverflow.com/a/70586885/9652621
 @Composable
-fun Banner(modifier: Modifier, text: String) {
+fun Banner(modifier: Modifier, directoryItem: ViewState<Pair<String, List<ListDirectory>>>) {
     val bgColor = MaterialTheme.colorScheme.primaryContainer
     val textColor = MaterialTheme.colorScheme.onPrimaryContainer
 
@@ -105,8 +105,9 @@ fun Banner(modifier: Modifier, text: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val mod = if (text.equals("0 B")) Modifier.shimmer()
-        else Modifier
+
+        val mod = if (directoryItem is ViewState.Success) Modifier
+        else Modifier.shimmer()
 
         Box(
             mod
@@ -114,18 +115,29 @@ fun Banner(modifier: Modifier, text: String) {
                 .fillMaxWidth(0.4f)
                 .aspectRatio(1f)
                 .shadow(elevation = 16.dp, shape = CircleShape)
-                .background(bgColor, shape = CircleShape),
-            contentAlignment = Alignment.Center
+                .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = buildAnnotatedString {
-                    val split = text.split(" ")
+                    when (directoryItem) {
+                        is ViewState.Success -> {
+                            val split =
+                                directoryItem.data.first.split(" ")
+                            withStyle(SpanStyle(fontSize = 32.sp)) {
+                                append(split.get(0))
+                            }
+                            withStyle(SpanStyle(fontSize = 18.sp)) {
+                                append(" ${split.get(1)}")
+                            }
+                        }
 
-                    withStyle(SpanStyle(fontSize = 32.sp)) {
-                        append(split.get(0))
-                    }
-                    withStyle(SpanStyle(fontSize = 18.sp)) {
-                        append(" ${split.get(1)}")
+                        is ViewState.Loading -> withStyle(SpanStyle(fontSize = 18.sp)) {
+                            append("Loading...")
+                        }
+
+                        is ViewState.Error -> withStyle(SpanStyle(fontSize = 18.sp)) {
+                            append("Error")
+                        }
                     }
                 },
                 style = MaterialTheme.typography.titleLarge,
@@ -175,8 +187,7 @@ fun SingleCard(
                     .fillMaxWidth(0.2f)
                     .aspectRatio(1f)
                     .shadow(elevation = 8.dp, shape = CircleShape)
-                    .background(bgColor, shape = CircleShape),
-                contentAlignment = Alignment.Center
+                    .background(bgColor, shape = CircleShape), contentAlignment = Alignment.Center
             ) {
                 Icon(
                     modifier = Modifier.padding(8.dp),
@@ -231,11 +242,10 @@ fun ItemCard(
         // only for keeping track of the UI
         var selected by remember { mutableStateOf(isSelected) }
 
-        var modifier =
-            if (listFile.filePath.toString().contains(Constants.LIST_LOADING_INDICATION))
-                Modifier.shimmer()
-            else
-                Modifier
+        var modifier = if (listFile.filePath.toString()
+                .contains(Constants.LIST_LOADING_INDICATION)
+        ) Modifier.shimmer()
+        else Modifier
 
         Card(
             modifier = modifier
@@ -245,70 +255,53 @@ fun ItemCard(
                     if (selected) 16.dp else 8.dp
                 ),
         ) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .clip(shape = RoundedCornerShape(8.dp))
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onLongPress = {
-                                if (!selectionEnabled)
-                                    return@detectTapGestures
+            Box(Modifier
+                .fillMaxSize()
+                .clip(shape = RoundedCornerShape(8.dp))
+                .pointerInput(Unit) {
+                    detectTapGestures(onLongPress = {
+                        if (!selectionEnabled) return@detectTapGestures
 
-                                selected = !selected
+                        selected = !selected
 
-                                if (!listFile.filePath
-                                        .toString()
-                                        .contains(Constants.LIST_LOADING_INDICATION)
-                                ) toggleSelection()
-                            },
-                            onTap = {
-                                if (selectionEnabled &&
-                                    !listFile.filePath
-                                        .toString()
-                                        .contains(Constants.LIST_LOADING_INDICATION)
-                                ) openFile(
-                                    navController.context,
-                                    listFile
-                                )
-                            }
+                        if (!listFile.filePath.toString()
+                                .contains(Constants.LIST_LOADING_INDICATION)
+                        ) toggleSelection()
+                    }, onTap = {
+                        if (selectionEnabled && !listFile.filePath.toString()
+                                .contains(Constants.LIST_LOADING_INDICATION)
+                        ) openFile(
+                            navController.context, listFile
                         )
-                    }
-            ) {
-                if (selectionEnabled)
-                    Box(
-                        Modifier
-                            .padding(8.dp)
-                            .size(24.dp)
-                            .align(Alignment.TopStart)
-                            .clip(CircleShape)
-                            .border(
-                                BorderStroke(
-                                    2.dp,
-                                    if (selected) Color.Unspecified else Color.White,
-                                ),
-                                CircleShape
-                            )
-                            .aspectRatio(1f)
-                            .zIndex(4f)
-                            .clickable {
-                                selected = !selected
+                    })
+                }) {
+                if (selectionEnabled) Box(Modifier
+                    .padding(8.dp)
+                    .size(24.dp)
+                    .align(Alignment.TopStart)
+                    .clip(CircleShape)
+                    .border(
+                        BorderStroke(
+                            2.dp,
+                            if (selected) Color.Unspecified else Color.White,
+                        ), CircleShape
+                    )
+                    .aspectRatio(1f)
+                    .zIndex(4f)
+                    .clickable {
+                        selected = !selected
 
-                                if (!listFile.filePath
-                                        .toString()
-                                        .contains(Constants.LIST_LOADING_INDICATION)
-                                ) toggleSelection()
-                            }
-                    ) {
-                        if (selected)
-                            Icon(
-                                modifier = Modifier
-                                    .clip(CircleShape),
-                                painter = painterResource(id = R.drawable.check_circle_filled),
-                                tint = MaterialTheme.colorScheme.primaryContainer,
-                                contentDescription = "checkbox",
-                            )
-                    }
+                        if (!listFile.filePath.toString()
+                                .contains(Constants.LIST_LOADING_INDICATION)
+                        ) toggleSelection()
+                    }) {
+                    if (selected) Icon(
+                        modifier = Modifier.clip(CircleShape),
+                        painter = painterResource(id = R.drawable.check_circle_filled),
+                        tint = MaterialTheme.colorScheme.primaryContainer,
+                        contentDescription = "checkbox",
+                    )
+                }
 
                 if (listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE) GlideImage(
                     model = listFile,
@@ -422,30 +415,21 @@ fun ItemCard(
 fun openFile(context: Context, listFile: ListFile) {
     try {
         startActivity(
-            context,
-            Intent(
-                Intent.ACTION_VIEW,
-                FileProvider.getUriForFile(
-                    context,
-                    context.packageName + ".provider",
-                    listFile
+            context, Intent(
+                Intent.ACTION_VIEW, FileProvider.getUriForFile(
+                    context, context.packageName + ".provider", listFile
                 )
-            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-            null
+            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null
         )
     } catch (e: ActivityNotFoundException) {
         e.printStackTrace()
         Toast.makeText(
-            context,
-            "No application found to open this file.",
-            Toast.LENGTH_SHORT
+            context, "No application found to open this file.", Toast.LENGTH_SHORT
         ).show()
     } catch (e: IllegalArgumentException) {
         e.printStackTrace()
         Toast.makeText(
-            context,
-            "Something went wrong...",
-            Toast.LENGTH_SHORT
+            context, "Something went wrong...", Toast.LENGTH_SHORT
         ).show()
     }
 }
