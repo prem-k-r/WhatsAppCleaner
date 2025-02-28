@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vishnu.whatsappcleaner
+package com.vishnu.whatsappcleaner.model
 
+import com.vishnu.whatsappcleaner.R
 import java.io.Serializable
 
 data class ListDirectory(

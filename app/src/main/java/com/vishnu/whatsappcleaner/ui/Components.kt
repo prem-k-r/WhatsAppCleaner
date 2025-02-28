@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vishnu.whatsappcleaner
+package com.vishnu.whatsappcleaner.ui
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -78,6 +78,10 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.valentinilk.shimmer.shimmer
+import com.vishnu.whatsappcleaner.Constants
+import com.vishnu.whatsappcleaner.R
+import com.vishnu.whatsappcleaner.model.ListDirectory
+import com.vishnu.whatsappcleaner.model.ListFile
 
 @Composable
 fun Title(modifier: Modifier, text: String) {

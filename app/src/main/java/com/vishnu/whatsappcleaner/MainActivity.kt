@@ -47,6 +47,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.vishnu.whatsappcleaner.ui.DetailsScreen
+import com.vishnu.whatsappcleaner.ui.HomeScreen
+import com.vishnu.whatsappcleaner.ui.PermissionScreen
 import com.vishnu.whatsappcleaner.ui.theme.WhatsAppCleanerTheme
 import java.io.File
 

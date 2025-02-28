@@ -17,27 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vishnu.whatsappcleaner
+package com.vishnu.whatsappcleaner.model
 
-import android.content.Context
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.first
+import java.io.File
 
-class StoreData(val context: Context) {
-
+data class ListFile(
+    val filePath: String,
+    var size: String = "0 B",
+    var isSelected: Boolean = false,
+) : File(filePath) {
     companion object {
-        private val Context.dataStore by preferencesDataStore(name = "store_data")
+        private const val serialVersionUID: Long = 8425722975465458623L
     }
 
-    suspend fun set(key: String, value: String) {
-        context.dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(key)] = value
-        }
-    }
+    override fun equals(other: Any?): Boolean {
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
 
-    suspend fun get(key: String): String? = context.dataStore.data.first().get(
-        stringPreferencesKey(key)
-    )
+        other as ListFile
+
+        if (filePath != other.filePath) return false
+        if (size != other.size) return false
+        if (isSelected != other.isSelected) return false
+
+        return true
+    }
 }

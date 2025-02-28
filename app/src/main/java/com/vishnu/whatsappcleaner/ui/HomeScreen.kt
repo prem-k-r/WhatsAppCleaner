@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vishnu.whatsappcleaner
+package com.vishnu.whatsappcleaner.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +40,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.vishnu.whatsappcleaner.BuildConfig
+import com.vishnu.whatsappcleaner.Constants
+import com.vishnu.whatsappcleaner.MainViewModel
+import com.vishnu.whatsappcleaner.R
+import com.vishnu.whatsappcleaner.model.ListDirectory
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: MainViewModel) {
