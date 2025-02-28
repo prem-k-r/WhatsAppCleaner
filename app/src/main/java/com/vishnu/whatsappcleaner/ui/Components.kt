@@ -121,13 +121,21 @@ fun Banner(modifier: Modifier, directoryItem: ViewState<Pair<String, List<ListDi
                 text = buildAnnotatedString {
                     when (directoryItem) {
                         is ViewState.Success -> {
-                            val split =
-                                directoryItem.data.first.split(" ")
-                            withStyle(SpanStyle(fontSize = 32.sp)) {
-                                append(split.get(0))
-                            }
-                            withStyle(SpanStyle(fontSize = 18.sp)) {
-                                append(" ${split.get(1)}")
+
+                            var size = directoryItem.data.first
+
+                            if (size.contains(" ")) {
+                                val split = size.split(" ")
+                                withStyle(SpanStyle(fontSize = 32.sp)) {
+                                    append(split.get(0))
+                                }
+                                withStyle(SpanStyle(fontSize = 18.sp)) {
+                                    append(" ${split.get(1)}")
+                                }
+                            } else {
+                                withStyle(SpanStyle(fontSize = 28.sp)) {
+                                    append(size)
+                                }
                             }
                         }
 
