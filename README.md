@@ -51,6 +51,10 @@ If you enjoy the app, wish to contribute or simply wish to be with like-minded p
   </a>
 </p>
 
+## Why build this project?
+
+If you are like me and my fellow 3 billion people, you use WhatsApp! Well, maybe you are a user who cleans WhatsApp files regularly from storage. WhatsApp Cleaner is an easier way to do this. I had the need to for such an application, but I couldn't find any *actually working* ones on the Play Store or F-Droid -- mostly limited due to Android's varying permission requirements. And I decided to build one! :)
+
 <!-- 
 ## Contribute to the project
 [CONTRIBUTING.md](https://github.com/VishnuSanal/Quotes/blob/main/CONTRIBUTING.md) would a good place to start :)
