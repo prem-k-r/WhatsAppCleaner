@@ -22,6 +22,14 @@
 
 </p>
 
+<p align="center">
+	
+<a href="https://www.producthunt.com/posts/whatsapp-cleaner?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-whatsapp&#0045;cleaner" target="_blank">
+	<img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=938571&theme=light&t=1741181734690" alt="WhatsApp&#0032;Cleaner - Clean&#0032;WhatsApp&#0039;s&#0032;Redundant&#0032;Media&#0032;and&#0032;Files&#0032;from&#0032;Storage | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" />
+</a>
+
+</p>
+
 <!--
 <a href="https://hosted.weblate.org/engage/quotes-status-creator/">
   <img src="https://hosted.weblate.org/widgets/quotes-status-creator/-/quotes-status-creator/horizontal-auto.svg" alt="Translation status" />
