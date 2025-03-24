@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2025 Vishnu Sanal T
  *
- * This file is part of WhatsApp Cleaner.
+ * This file is part of WhatsAppCleaner.
  *
  * Quotes Status Creator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

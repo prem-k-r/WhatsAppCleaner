@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2025 Vishnu Sanal T
  *
- * This file is part of WhatsApp Cleaner.
+ * This file is part of WhatsAppCleaner.
  *
  * Quotes Status Creator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ fun PermissionScreen(
 
             Text(
                 modifier = Modifier.padding(16.dp),
-                text = "Thanks for installing WhatsApp Cleaner. Please follow this quick setup to get started.",
+                text = "Thanks for installing WhatsAppCleaner. Please follow this quick setup to get started.",
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Start,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -75,7 +75,7 @@ fun PermissionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp),
-                text = "1. Please grant the required permissions to WhatsApp Cleaner",
+                text = "1. Please grant the required permissions to WhatsAppCleaner",
                 textAlign = TextAlign.Justify,
                 style = MaterialTheme.typography.bodyMedium,
             )
