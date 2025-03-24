@@ -88,6 +88,7 @@ import com.vishnu.whatsappcleaner.R
 import com.vishnu.whatsappcleaner.ViewState
 import com.vishnu.whatsappcleaner.model.ListDirectory
 import com.vishnu.whatsappcleaner.model.ListFile
+import java.text.DateFormat
 
 @Composable
 fun Title(modifier: Modifier, text: String) {
@@ -626,6 +627,18 @@ fun ItemListCard(
 
                     Text(
                         text = listFile.size,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    VerticalDivider(
+                        modifier = Modifier.padding(2.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = DateFormat.getDateInstance().format(listFile.lastModified()),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
