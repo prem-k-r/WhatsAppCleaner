@@ -33,9 +33,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -105,6 +107,7 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
 
+    var isGridView by remember { mutableStateOf(true) }
     var isAllSelected by remember { mutableStateOf(false) }
 
     LaunchedEffect(isInProgress, sortBy.value, isSortDescending.value) {
@@ -151,6 +154,27 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                 )
 
                 Spacer(Modifier.weight(1f))
+
+                IconButton(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(horizontal = 4.dp),
+                    onClick = {
+                        isGridView = !isGridView
+                    }
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(32.dp),
+                        painter =
+                        if (isGridView)
+                            painterResource(id = R.drawable.ic_view_list)
+                        else
+                            painterResource(id = R.drawable.ic_grid_view),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "grid list view",
+                    )
+                }
 
                 IconButton(
                     modifier = Modifier
@@ -309,23 +333,41 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                     }
 
                     if (currentList.isNotEmpty()) {
-                        LazyVerticalGrid(
-                            modifier = Modifier.fillMaxSize(),
-                            columns = GridCells.Fixed(3),
-                        ) {
-                            items(currentList) {
-                                ItemCard(
-                                    it,
-                                    navController,
-                                    isSelected = selectedItems.contains(it)
-                                ) {
-                                    if (selectedItems.contains(it))
-                                        selectedItems.remove(it)
-                                    else
-                                        selectedItems.add(it)
+                        if (isGridView)
+                            LazyVerticalGrid(
+                                modifier = Modifier.fillMaxSize(),
+                                columns = GridCells.Fixed(3),
+                            ) {
+                                items(currentList) {
+                                    ItemGridCard(
+                                        it,
+                                        navController,
+                                        isSelected = selectedItems.contains(it)
+                                    ) {
+                                        if (selectedItems.contains(it))
+                                            selectedItems.remove(it)
+                                        else
+                                            selectedItems.add(it)
+                                    }
                                 }
                             }
-                        }
+                        else
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                            ) {
+                                items(currentList) {
+                                    ItemListCard(
+                                        it,
+                                        navController,
+                                        isSelected = selectedItems.contains(it)
+                                    ) {
+                                        if (selectedItems.contains(it))
+                                            selectedItems.remove(it)
+                                        else
+                                            selectedItems.add(it)
+                                    }
+                                }
+                            }
                     } else {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -626,7 +668,7 @@ fun ConfirmationDialog(
                         .wrapContentHeight(),
                     columns = GridCells.Fixed(3),
                 ) {
-                    items(list) { ItemCard(it, navController, selectionEnabled = false) {} }
+                    items(list) { ItemGridCard(it, navController, selectionEnabled = false) {} }
                 }
             }
         }

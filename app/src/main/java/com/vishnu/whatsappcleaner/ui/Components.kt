@@ -25,6 +25,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -32,12 +33,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,6 +49,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -267,7 +271,7 @@ fun SingleCard(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ItemCard(
+fun ItemGridCard(
     listFile: ListFile,
     navController: NavHostController,
     isSelected: Boolean = false,
@@ -449,6 +453,156 @@ fun ItemCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ItemListCard(
+    listFile: ListFile,
+    navController: NavHostController,
+    isSelected: Boolean = false,
+    selectionEnabled: Boolean = true,
+    toggleSelection: () -> Unit,
+) {
+    var selected by remember { mutableStateOf(isSelected) }
+
+    val modifier = if (listFile.filePath.toString().contains(Constants.LIST_LOADING_INDICATION))
+        Modifier.shimmer() else Modifier
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 8.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clickable {
+                    if (selectionEnabled &&
+                        !listFile.filePath.toString()
+                            .contains(Constants.LIST_LOADING_INDICATION)
+                    ) {
+                        openFile(navController.context, listFile)
+                    }
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (selectionEnabled) {
+                Box(
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            selected = !selected
+                            if (!listFile.filePath.toString()
+                                    .contains(Constants.LIST_LOADING_INDICATION)
+                            ) {
+                                toggleSelection()
+                            }
+                        }
+                ) {
+                    when {
+                        listFile.extension.lowercase() in Constants.EXTENSIONS_IMAGE -> {
+                            GlideImage(
+                                model = listFile,
+                                contentScale = ContentScale.Crop,
+                                loading = placeholder(R.drawable.image),
+                                failure = placeholder(R.drawable.error),
+                                contentDescription = "image preview",
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+
+                        listFile.extension.lowercase() in Constants.EXTENSIONS_VIDEO -> {
+                            Icon(
+                                painter = painterResource(id = R.drawable.video),
+                                contentDescription = "video",
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        listFile.extension.lowercase() in Constants.EXTENSIONS_DOCS -> {
+                            Icon(
+                                painter = painterResource(id = R.drawable.document),
+                                contentDescription = "document",
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        listFile.extension.lowercase() in Constants.EXTENSIONS_AUDIO -> {
+                            Icon(
+                                painter = painterResource(id = R.drawable.audio),
+                                contentDescription = "audio file",
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        else -> {
+                            Icon(
+                                painter = painterResource(id = R.drawable.unknown),
+                                contentDescription = "unknown file",
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    if (selected) {
+                        Icon(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(48.dp),
+                            painter = painterResource(id = R.drawable.check_circle_filled),
+                            tint = MaterialTheme.colorScheme.primaryContainer,
+                            contentDescription = "checkbox"
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .fillMaxWidth()
+                        .basicMarquee(),
+                    text = listFile.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip
+                )
+                Row(Modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
+                    Text(
+                        text = listFile.extension.uppercase(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    VerticalDivider(
+                        modifier = Modifier.padding(2.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = listFile.size,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
