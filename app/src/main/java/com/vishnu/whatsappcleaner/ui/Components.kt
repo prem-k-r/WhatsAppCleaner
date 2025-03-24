@@ -413,7 +413,7 @@ fun ItemGridCard(
                                 .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
                                 .padding(8.dp),
                             painter = painterResource(id = R.drawable.audio),
-                            contentDescription = "doc",
+                            contentDescription = "audio",
                         )
 
                         Text(
@@ -438,7 +438,7 @@ fun ItemGridCard(
                                 .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
                                 .padding(8.dp),
                             painter = painterResource(id = R.drawable.unknown),
-                            contentDescription = "doc",
+                            contentDescription = "unknown",
                         )
 
                         Text(
@@ -533,10 +533,24 @@ fun ItemListCard(
 
                         listFile.extension.lowercase() in Constants.EXTENSIONS_VIDEO -> {
                             Icon(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .align(Alignment.Center)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
+                                    .padding(8.dp)
+                                    .aspectRatio(1f)
+                                    .zIndex(2f),
                                 painter = painterResource(id = R.drawable.video),
                                 contentDescription = "video",
-                                modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            GlideImage(
+                                model = listFile,
+                                contentScale = ContentScale.Crop,
+                                loading = placeholder(R.drawable.image),
+                                failure = placeholder(R.drawable.error),
+                                contentDescription = "details list item"
                             )
                         }
 
@@ -572,7 +586,8 @@ fun ItemListCard(
                         Icon(
                             modifier = Modifier
                                 .align(Alignment.Center)
-                                .size(48.dp),
+                                .size(48.dp)
+                                .zIndex(3f),
                             painter = painterResource(id = R.drawable.check_circle_filled),
                             tint = MaterialTheme.colorScheme.primaryContainer,
                             contentDescription = "checkbox"
