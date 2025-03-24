@@ -484,13 +484,24 @@ fun ItemListCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clickable {
-                    if (selectionEnabled &&
-                        !listFile.filePath.toString()
-                            .contains(Constants.LIST_LOADING_INDICATION)
-                    ) {
-                        openFile(navController.context, listFile)
-                    }
+                .pointerInput(Unit) {
+                    detectTapGestures(onLongPress = {
+                        if (!selectionEnabled) return@detectTapGestures
+
+                        selected = !selected
+
+                        if (!listFile.filePath.toString()
+                                .contains(Constants.LIST_LOADING_INDICATION)
+                        ) toggleSelection()
+                    }, onTap = {
+                        if (selectionEnabled &&
+                            !listFile.filePath.toString()
+                                .contains(Constants.LIST_LOADING_INDICATION)
+                        ) openFile(
+                            navController.context,
+                            listFile
+                        )
+                    })
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
