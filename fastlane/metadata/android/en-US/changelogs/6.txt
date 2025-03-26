@@ -1,3 +1,0 @@
-- fix crash at startup
-
-Full Changelog -> https://github.com/VishnuSanal/WhatsAppCleaner/compare/v1.0.3...v1.0.2
