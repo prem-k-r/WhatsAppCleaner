@@ -114,15 +114,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                     compareBy { it.lastModified() }
             )
 
-            if (filterStartDate != null && filterEndDate != null) {
+            if (sortBy.contains("Date") && filterStartDate != null && filterEndDate != null) {
                 val filteredList = fileList.filter {
-                    Log.e(
-                        "vishnu",
-                        "${DateFormat.getDateInstance().format(filterStartDate)} ::" +
-                            "${DateFormat.getDateInstance().format(it.lastModified())} ::" +
-                            "${DateFormat.getDateInstance().format(filterEndDate)} ::"
-                    )
-
                     val lastModified = Date(it.lastModified())
 
                     lastModified.after(Date(filterStartDate)) && lastModified.before(Date(filterEndDate))

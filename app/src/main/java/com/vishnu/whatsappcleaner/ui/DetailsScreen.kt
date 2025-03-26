@@ -214,6 +214,11 @@ fun DetailsScreen(navController: NavHostController, viewModel: MainViewModel) {
                         .padding(horizontal = 4.dp),
                     onClick = {
                         showSortDialog = true
+
+                        // resetting everything for safety -- accidental selction & deletion
+                        dateRangePickerState.setSelection(null, null)
+                        selectedItems.clear()
+                        isAllSelected = false
                     }
                 ) {
                     Icon(
