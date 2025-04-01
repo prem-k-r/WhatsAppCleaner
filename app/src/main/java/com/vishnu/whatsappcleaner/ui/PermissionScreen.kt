@@ -105,7 +105,7 @@ fun PermissionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp),
-                text = "2. Pleae grant access to the WhatsApp directory as shown in the picture below",
+                text = "2. Please grant access to the WhatsApp directory as shown in the picture below",
                 textAlign = TextAlign.Justify,
                 style = MaterialTheme.typography.bodyMedium,
             )
