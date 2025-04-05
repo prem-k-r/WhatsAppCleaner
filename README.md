@@ -61,7 +61,7 @@ If you enjoy the app, wish to contribute or simply wish to be with like-minded p
 
 ## Why?
 
-Hi, I have been developing open-source native Android products for a while now. So, if you are like me and my fellow 3 billion people, you use WhatsApp! Have you ever wondered how much of your storage WhatsApp takes? Well, maybe you are a user who cleans WhatsApp files regularly from storage. WhatsApp Cleaner is an easier way to do this. I had the need to for such an application, but I couldn't find any *actually working* ones on the Play Store or F-Droid -- mostly limited due to Android's varying permission requirements. And I decided to build one! :)
+Hi, I have been developing open-source native Android products for a while now. I have seen many Android devices with storage running out; most of the time all they needed were to clean-up the storage consumed by WhatsApp. I had searched for an application for the same, but I couldn't find any actually working ones on Google Play nor FDroid, but none seemed to work fine, mostly limited due to Android's varying permission requirements for different versions. And I decided to build one! :)
 
 <!-- 
 ## Contribute to the project
